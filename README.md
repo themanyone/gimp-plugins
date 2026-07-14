@@ -40,7 +40,9 @@ git clone https://github.com/themanyone/gimp-plugins.git
 Or symlink individual plugins:
 
 ```shell
-ln -s /path/to/gimp-plugins/bgremove ~/.config/GIMP/3.0/plug-ins/
+ls ~/.config/GIMP # find version number
+# version could be higher than 3.2 now
+ln -s /path/to/gimp-plugins/bgremove ~/.config/GIMP/3.2/plug-ins/
 ```
 
 ### 3. Restart GIMP
@@ -64,14 +66,23 @@ See [AGENTS.md](AGENTS.md) for the full architecture guide and development notes
 
 ### Background Remove
 
-Edit `bgremove/bgremove.py` and modify the `command` list to use a different CLI tool (e.g., `rembg` instead of `backgroundremover`).
+- This works with existing tools.
+- Let's assume you have installed `backgroundremover`.
+
+Don't want to use `backgroundremover`?
+- Install any old command-line AI tool to remove backgrounds from images.
+- You can use `pip install rembg` for example.
+- Edit `bgremove/bgremove.py` and modify the `command` list to use a different CLI tool (e.g., `rembg` instead of `backgroundremover`).
 
 ### AI Upscale
 
-Edit `upscale/upscale.py` to:
-- Change `DEFAULT_MODEL` to any key in `MODEL_CONFIGS`
+The Upscale plugin prompts you to choose an AI model when you use the plugin in Gimp. And it allows you to save preferences. Models are downloaded automatically, so it might take some time to upscale your first image.
+
+It is not necessary to edit `upscale/upscale.py` to:
+- Change `DEFAULT_MODEL` or any key in `MODEL_CONFIGS`
 - Add new upscaling models with appropriate config
 - Tune inference parameters (tile_size, steps, noise_level, etc.)
+...but you can!
 
 ## License
 
@@ -82,3 +93,17 @@ Edit `upscale/upscale.py` to:
 ## Author
 
 **Henry Kroll III** ([@themanyone](https://github.com/themanyone))
+
+## Thanks for trying out bgremove!
+* GitHub https://github.com/themanyone
+* YouTube https://www.youtube.com/themanyone
+* Mastodon https://mastodon.social/@themanyone
+* Linkedin https://www.linkedin.com/in/henry-kroll-iii-93860426/
+* Buy me a coffee https://buymeacoffee.com/isreality
+* TheNerdShow.com
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for
+details.
+
