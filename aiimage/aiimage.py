@@ -267,7 +267,7 @@ class AIImage(Gimp.PlugIn):
                                             aiimage_func, None)
 
         procedure.set_sensitivity_mask(
-            Gimp.ProcedureSensitivityMask.NO_IMAGE
+            Gimp.ProcedureSensitivityMask.ALWAYS
         )
         procedure.set_image_types("*")
 
