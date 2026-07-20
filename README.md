@@ -1,5 +1,7 @@
 # GIMP 3 AI Plugins
 
+![AI Edit in GIMP 3](aiedit/images/gimp-plugins.webp)
+
 A collection of Python-based AI plugins for **GIMP 3** (GNU Image Manipulation Program), using the GIMP 3 Python API via PyGObject introspection.
 
 ## Plugins
@@ -19,13 +21,13 @@ A collection of Python-based AI plugins for **GIMP 3** (GNU Image Manipulation P
 
 - **GIMP 3.0+** — these plugins use the GIMP 3 Python API (`gi.require_version('Gimp', '3.0')`)
 - **Python 3** — GIMP 3 ships with its own Python environment
-- **CUDA-capable GPU** — strongly recommended for the upscale plugin
+- **CUDA-capable GPU** — strongly recommended for the upscale, image edit plugins.
 
 ## Installation
 
 ### 1. Install plugin dependencies
 
-The `install.py` installer (experimental) will attempt to perform these steps. Developers & power users may want fine-grained control & knowledge of install locations so here goes.
+The `install.py` installer (experimental) will attempt to perform these steps. Developers & power users may want fine-grained control & knowledge of install locations here:
 
 **AI Edit**
 
@@ -49,6 +51,8 @@ The installer looks for the highest-numbered GIMP/xx.x/plug-ins directory.
 git clone https://github.com/themanyone/gimp-plugins.git
 cd gimp-plugins
 ln -srf bgremove ~/.config/GIMP/3.2/plug-ins/
+ln -srf aiedit ~/.config/GIMP/3.2/plug-ins/
+# install additional plugins the same way
 ```
 
 ### 3. Restart GIMP
