@@ -1,0 +1,69 @@
+# Русский translation for python-fu-bgremove.
+# Copyright (C) 2026
+# This file is distributed under the same license as the python-fu-bgremove package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: python-fu-bgremove\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-19 00:00+0000\n"
+"PO-Revision-Date: 2026-07-19 00:00+0000\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: Русский\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: python-fu-bgremove.py
+msgid "Saving image for processing..."
+msgstr "Сохранение изображения для обработки..."
+
+#: python-fu-bgremove.py
+msgid "Running background removal (this may take time)..."
+msgstr "Удаление фона (это может занять время)..."
+
+#: python-fu-bgremove.py
+msgid "Background remover failed. Ensure 'backgroundremover' is installed and working."
+msgstr "Удаление фона не удалось. Убедитесь, что 'backgroundremover' установлен и работает."
+
+#: python-fu-bgremove.py
+msgid "Background remover executed successfully but failed to create the output file."
+msgstr "Удаление фона выполнено успешно, но не удалось создать выходной файл."
+
+#: python-fu-bgremove.py
+msgid "Loading processed image..."
+msgstr "Загрузка обработанного изображения..."
+
+#: python-fu-bgremove.py
+msgid "Failed to load the processed image file."
+msgstr "Не удалось загрузить обработанный файл изображения."
+
+#: python-fu-bgremove.py
+msgid "Background Removed Layer"
+msgstr "Слой без фона"
+
+#: python-fu-bgremove.py
+msgid "Transferring layer data..."
+msgstr "Передача данных слоя..."
+
+#: python-fu-bgremove.py
+msgid "Background Removed"
+msgstr "Фон удален"
+
+#: python-fu-bgremove.py
+msgid "An unexpected error occurred: %s"
+msgstr "Произошла неожиданная ошибка: %s"
+
+#: python-fu-bgremove.py
+msgid "Remove Background"
+msgstr "Удалить фон"
+
+#: python-fu-bgremove.py
+msgid "Uses the external 'backgroundremover' tool to automatically remove the background from the active image or layer."
+msgstr "Использует внешний инструмент 'backgroundremover' для автоматического удаления фона из активного изображения или слоя."
+
+#: python-fu-bgremove.py
+msgid "Remove _Background..."
+msgstr "Удалить _фон..."

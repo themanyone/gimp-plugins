@@ -1,0 +1,81 @@
+# Português (Brasil) translation for python-fu-upscale.
+# Copyright (C) 2026
+# This file is distributed under the same license as the python-fu-upscale package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: python-fu-upscale\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-19 00:00+0000\n"
+"PO-Revision-Date: 2026-07-19 00:00+0000\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: Português (Brasil)\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: python-fu-upscale.py
+msgid "Saving image for processing..."
+msgstr "Salvando imagem para processamento..."
+
+#: python-fu-upscale.py
+msgid "Running AI upscaling (this may take time)..."
+msgstr "Redimensionando com IA (isso pode levar tempo)..."
+
+#: python-fu-upscale.py
+msgid "Loading upscaled image..."
+msgstr "Carregando imagem redimensionada..."
+
+#: python-fu-upscale.py
+msgid "Upscaling failed to produce the output file."
+msgstr "Redimensionamento falhou ao produzir o arquivo de saída."
+
+#: python-fu-upscale.py
+msgid "Failed to load the upscaled image file."
+msgstr "Falha ao carregar o arquivo de imagem redimensionada."
+
+#: python-fu-upscale.py
+msgid "Upscaled Layer"
+msgstr "Camada redimensionada"
+
+#: python-fu-upscale.py
+msgid "Transferring layer data..."
+msgstr "Transferindo dados da camada..."
+
+#: python-fu-upscale.py
+msgid "Upscaled"
+msgstr "Redimensionada"
+
+#: python-fu-upscale.py
+msgid "An unexpected error occurred: %s"
+msgstr "Ocorreu um erro inesperado: %s"
+
+#: python-fu-upscale.py
+msgid "Upscale Image"
+msgstr "Redimensionar Imagem"
+
+#: python-fu-upscale.py
+msgid "Uses AI to upscale the active image or layer by 4x. Supports multiple backends: Spandrel (UltraSharp, DAT2) and Diffusers (LDM)."
+msgstr "Usa IA para redimensionar a imagem ou camada ativa em 4x. Suporta múltiplos backends: Spandrel (UltraSharp, DAT2) e Diffusers (LDM)."
+
+#: python-fu-upscale.py
+msgid "_Upscale..."
+msgstr "_Redimensionar..."
+
+#: python-fu-upscale.py
+msgid "_Model"
+msgstr "_Modelo"
+
+#: python-fu-upscale.py
+msgid "Upscaling model to use"
+msgstr "Modelo de redimensionamento a usar"
+
+#: python-fu-upscale.py
+msgid "Unknown model '%s'. Add it to MODEL_CONFIGS."
+msgstr "Modelo '%s' desconhecido. Adicione-o ao MODEL_CONFIGS."
+
+#: python-fu-upscale.py
+msgid "Unsupported model type '%s' in MODEL_CONFIGS."
+msgstr "Tipo de modelo '%s' não suportado no MODEL_CONFIGS."

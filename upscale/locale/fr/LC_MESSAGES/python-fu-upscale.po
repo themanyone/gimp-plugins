@@ -1,0 +1,81 @@
+# Français translation for python-fu-upscale.
+# Copyright (C) 2026
+# This file is distributed under the same license as the python-fu-upscale package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: python-fu-upscale\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-19 00:00+0000\n"
+"PO-Revision-Date: 2026-07-19 00:00+0000\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: Français\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: python-fu-upscale.py
+msgid "Saving image for processing..."
+msgstr "Enregistrement de l'image pour traitement..."
+
+#: python-fu-upscale.py
+msgid "Running AI upscaling (this may take time)..."
+msgstr "Agrandissement par IA (cela peut prendre du temps)..."
+
+#: python-fu-upscale.py
+msgid "Loading upscaled image..."
+msgstr "Chargement de l'image agrandie..."
+
+#: python-fu-upscale.py
+msgid "Upscaling failed to produce the output file."
+msgstr "L'agrandissement n'a pas produit le fichier de sortie."
+
+#: python-fu-upscale.py
+msgid "Failed to load the upscaled image file."
+msgstr "Échec du chargement du fichier image agrandi."
+
+#: python-fu-upscale.py
+msgid "Upscaled Layer"
+msgstr "Calque agrandi"
+
+#: python-fu-upscale.py
+msgid "Transferring layer data..."
+msgstr "Transfert des données du calque..."
+
+#: python-fu-upscale.py
+msgid "Upscaled"
+msgstr "Agrandi"
+
+#: python-fu-upscale.py
+msgid "An unexpected error occurred: %s"
+msgstr "Une erreur inattendue s'est produite : %s"
+
+#: python-fu-upscale.py
+msgid "Upscale Image"
+msgstr "Agrandir l'image"
+
+#: python-fu-upscale.py
+msgid "Uses AI to upscale the active image or layer by 4x. Supports multiple backends: Spandrel (UltraSharp, DAT2) and Diffusers (LDM)."
+msgstr "Utilise l'IA pour agrandir l'image ou le calque actif 4x. Prend en charge plusieurs moteurs : Spandrel (UltraSharp, DAT2) et Diffusers (LDM)."
+
+#: python-fu-upscale.py
+msgid "_Upscale..."
+msgstr "_Agrandir..."
+
+#: python-fu-upscale.py
+msgid "_Model"
+msgstr "_Modèle"
+
+#: python-fu-upscale.py
+msgid "Upscaling model to use"
+msgstr "Modèle d'agrandissement à utiliser"
+
+#: python-fu-upscale.py
+msgid "Unknown model '%s'. Add it to MODEL_CONFIGS."
+msgstr "Modèle '%s' inconnu. Ajoutez-le à MODEL_CONFIGS."
+
+#: python-fu-upscale.py
+msgid "Unsupported model type '%s' in MODEL_CONFIGS."
+msgstr "Type de modèle '%s' non pris en charge dans MODEL_CONFIGS."

@@ -1,0 +1,69 @@
+# Português (Brasil) translation for python-fu-bgremove.
+# Copyright (C) 2026
+# This file is distributed under the same license as the python-fu-bgremove package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: python-fu-bgremove\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-19 00:00+0000\n"
+"PO-Revision-Date: 2026-07-19 00:00+0000\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: Português (Brasil)\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: python-fu-bgremove.py
+msgid "Saving image for processing..."
+msgstr "Salvando imagem para processamento..."
+
+#: python-fu-bgremove.py
+msgid "Running background removal (this may take time)..."
+msgstr "Removendo fundo (isso pode levar tempo)..."
+
+#: python-fu-bgremove.py
+msgid "Background remover failed. Ensure 'backgroundremover' is installed and working."
+msgstr "Remoção de fundo falhou. Certifique-se de que 'backgroundremover' está instalado e funcionando."
+
+#: python-fu-bgremove.py
+msgid "Background remover executed successfully but failed to create the output file."
+msgstr "Remoção de fundo executada com sucesso, mas não criou o arquivo de saída."
+
+#: python-fu-bgremove.py
+msgid "Loading processed image..."
+msgstr "Carregando imagem processada..."
+
+#: python-fu-bgremove.py
+msgid "Failed to load the processed image file."
+msgstr "Falha ao carregar o arquivo de imagem processada."
+
+#: python-fu-bgremove.py
+msgid "Background Removed Layer"
+msgstr "Camada sem fundo"
+
+#: python-fu-bgremove.py
+msgid "Transferring layer data..."
+msgstr "Transferindo dados da camada..."
+
+#: python-fu-bgremove.py
+msgid "Background Removed"
+msgstr "Fundo removido"
+
+#: python-fu-bgremove.py
+msgid "An unexpected error occurred: %s"
+msgstr "Ocorreu um erro inesperado: %s"
+
+#: python-fu-bgremove.py
+msgid "Remove Background"
+msgstr "Remover Fundo"
+
+#: python-fu-bgremove.py
+msgid "Uses the external 'backgroundremover' tool to automatically remove the background from the active image or layer."
+msgstr "Usa a ferramenta externa 'backgroundremover' para remover automaticamente o fundo da imagem ou camada ativa."
+
+#: python-fu-bgremove.py
+msgid "Remove _Background..."
+msgstr "Remover _Fundo..."

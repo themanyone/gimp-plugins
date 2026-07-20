@@ -1,0 +1,81 @@
+# Русский translation for python-fu-upscale.
+# Copyright (C) 2026
+# This file is distributed under the same license as the python-fu-upscale package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: python-fu-upscale\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-19 00:00+0000\n"
+"PO-Revision-Date: 2026-07-19 00:00+0000\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: Русский\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: python-fu-upscale.py
+msgid "Saving image for processing..."
+msgstr "Сохранение изображения для обработки..."
+
+#: python-fu-upscale.py
+msgid "Running AI upscaling (this may take time)..."
+msgstr "Масштабирование ИИ (это может занять время)..."
+
+#: python-fu-upscale.py
+msgid "Loading upscaled image..."
+msgstr "Загрузка масштабированного изображения..."
+
+#: python-fu-upscale.py
+msgid "Upscaling failed to produce the output file."
+msgstr "Масштабирование не смогло создать выходной файл."
+
+#: python-fu-upscale.py
+msgid "Failed to load the upscaled image file."
+msgstr "Не удалось загрузить масштабированный файл изображения."
+
+#: python-fu-upscale.py
+msgid "Upscaled Layer"
+msgstr "Масштабированный слой"
+
+#: python-fu-upscale.py
+msgid "Transferring layer data..."
+msgstr "Передача данных слоя..."
+
+#: python-fu-upscale.py
+msgid "Upscaled"
+msgstr "Масштабировано"
+
+#: python-fu-upscale.py
+msgid "An unexpected error occurred: %s"
+msgstr "Произошла неожиданная ошибка: %s"
+
+#: python-fu-upscale.py
+msgid "Upscale Image"
+msgstr "Масштабировать изображение"
+
+#: python-fu-upscale.py
+msgid "Uses AI to upscale the active image or layer by 4x. Supports multiple backends: Spandrel (UltraSharp, DAT2) and Diffusers (LDM)."
+msgstr "Использует ИИ для масштабирования активного изображения или слоя в 4 раза. Поддерживает несколько бэкендов: Spandrel (UltraSharp, DAT2) и Diffusers (LDM)."
+
+#: python-fu-upscale.py
+msgid "_Upscale..."
+msgstr "_Масштабировать..."
+
+#: python-fu-upscale.py
+msgid "_Model"
+msgstr "_Модель"
+
+#: python-fu-upscale.py
+msgid "Upscaling model to use"
+msgstr "Модель масштабирования для использования"
+
+#: python-fu-upscale.py
+msgid "Unknown model '%s'. Add it to MODEL_CONFIGS."
+msgstr "Неизвестная модель '%s'. Добавьте ее в MODEL_CONFIGS."
+
+#: python-fu-upscale.py
+msgid "Unsupported model type '%s' in MODEL_CONFIGS."
+msgstr "Неподдерживаемый тип модели '%s' в MODEL_CONFIGS."
