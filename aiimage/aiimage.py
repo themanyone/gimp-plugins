@@ -118,6 +118,27 @@ def aiimage_func(procedure, run_mode, image, drawables, config, data):
             row += 1
             return spin
 
+        def add_spin_row_float(label_text, prop_name, default, min_val, max_val):
+            nonlocal row
+            label = Gtk.Label.new_with_mnemonic(label_text)
+            label.set_halign(Gtk.Align.START)
+            label.set_hexpand(False)
+            adjustment = Gtk.Adjustment(value=default, lower=min_val,
+                                        upper=max_val, step_incr=0.1, page_incr=10)
+            spin = Gtk.SpinButton(adjustment=adjustment, digits=1)
+            spin.set_hexpand(True)
+            spin.set_valign(Gtk.Align.CENTER)
+            label.set_mnemonic_widget(spin)
+
+            def on_spin_changed(s, pn=prop_name):
+                config.set_property(pn, s.get_value())
+
+            spin.connect("value-changed", on_spin_changed)
+            grid.attach(label, 0, row, 1, 1)
+            grid.attach(spin, 1, row, 1, 1)
+            row += 1
+            return spin
+
         add_file_row(_("Diffusion _Model:"), "diffusion-model", DEFAULT_DIFFUSION_MODEL)
         add_file_row(_("_LLM:"), "llm", DEFAULT_LLM)
         add_file_row(_("LLM _Vision:"), "llm-vision", DEFAULT_LLM_VISION)
@@ -127,6 +148,8 @@ def aiimage_func(procedure, run_mode, image, drawables, config, data):
         add_file_row(_("LoR_A:"), "lora", "")
         add_spin_row(_("_Width:"), "width", 1024, 64, 8192)
         add_spin_row(_("_Height:"), "height", 1024, 64, 8192)
+        add_spin_row(_("_Steps:"), "steps", 28, 1, 100)
+        add_spin_row_float(_("CFG S_cale:"), "cfg-scale", 4.0, 0.0, 30.0)
 
         # Prompt: multi-line text view
         prompt_label = Gtk.Label.new_with_mnemonic(_("_Prompt:"))
@@ -204,6 +227,8 @@ def aiimage_func(procedure, run_mode, image, drawables, config, data):
             "--offload-to-cpu",
             "--width", str(config.get_property("width")),
             "--height", str(config.get_property("height")),
+            "--steps", str(config.get_property("steps")),
+            "--cfg-scale", str(config.get_property("cfg-scale")),
             "-o", str(output_path),
             "-p", config.get_property("prompt"),
         ])
@@ -326,6 +351,16 @@ class AIImage(Gimp.PlugIn):
         procedure.add_int_argument(
             "height", _("_Height"), _("Image height in pixels"),
             64, 8192, 1024, GObject.ParamFlags.READWRITE,
+        )
+        # Steps
+        procedure.add_int_argument(
+            "steps", _("_Steps"), _("Number of sampling steps"),
+            1, 100, 28, GObject.ParamFlags.READWRITE,
+        )
+        # CFG scale
+        procedure.add_double_argument(
+            "cfg-scale", _("CFG S_cale"), _("Classifier-free guidance scale"),
+            0.0, 30.0, 4.0, GObject.ParamFlags.READWRITE,
         )
         # Prompt
         procedure.add_string_argument(
