@@ -1,0 +1,109 @@
+# Français translation for python-fu-aiedit.
+# Copyright (C) 2026
+# This file is distributed under the same license as the python-fu-aiedit package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: python-fu-aiedit\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-19 00:00+0000\n"
+"PO-Revision-Date: 2026-07-19 00:00+0000\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: Français\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: python-fu-aiedit.py
+msgid "Saving image for processing..."
+msgstr "Enregistrement de l'image pour traitement..."
+
+#: python-fu-aiedit.py
+msgid "Running AI edit (this may take time)..."
+msgstr "Édition par IA (cela peut prendre du temps)..."
+
+#: python-fu-aiedit.py
+msgid "AI edit failed. Ensure 'sd-cli' is installed and working."
+msgstr "L'édition IA a échoué. Assurez-vous que 'sd-cli' est installé et fonctionne."
+
+#: python-fu-aiedit.py
+msgid "AI edit executed but failed to create the output file."
+msgstr "L'édition IA a été exécutée mais n'a pas créé le fichier de sortie."
+
+#: python-fu-aiedit.py
+msgid "Loading processed image..."
+msgstr "Chargement de l'image traitée..."
+
+#: python-fu-aiedit.py
+msgid "Failed to load the processed image file."
+msgstr "Échec du chargement du fichier image traité."
+
+#: python-fu-aiedit.py
+msgid "AI Edit Layer"
+msgstr "Calque d'édition IA"
+
+#: python-fu-aiedit.py
+msgid "Transferring layer data..."
+msgstr "Transfert des données du calque..."
+
+#: python-fu-aiedit.py
+msgid "AI Edited"
+msgstr "Édité par IA"
+
+#: python-fu-aiedit.py
+msgid "An unexpected error occurred: %s"
+msgstr "Une erreur inattendue s'est produite : %s"
+
+#: python-fu-aiedit.py
+msgid "AI Edit"
+msgstr "Édition IA"
+
+#: python-fu-aiedit.py
+msgid "Uses sd-cli with a diffusion model and vision LLM to edit the active image or layer based on a text prompt."
+msgstr "Utilise sd-cli avec un modèle de diffusion et un LLM de vision pour éditer l'image ou le calque actif selon une description textuelle."
+
+#: python-fu-aiedit.py
+msgid "AI _Edit..."
+msgstr "Édition _IA..."
+
+#: python-fu-aiedit.py
+msgid "Diffusion _Model"
+msgstr "Modèle de _Diffusion"
+
+#: python-fu-aiedit.py
+msgid "Path to the diffusion model GGUF file"
+msgstr "Chemin vers le fichier GGUF du modèle de diffusion"
+
+#: python-fu-aiedit.py
+msgid "_LLM"
+msgstr "_LLM"
+
+#: python-fu-aiedit.py
+msgid "Path to the LLM GGUF file"
+msgstr "Chemin vers le fichier GGUF du LLM"
+
+#: python-fu-aiedit.py
+msgid "LLM _Vision"
+msgstr "_Vision LLM"
+
+#: python-fu-aiedit.py
+msgid "Path to the LLM vision model mmproj file"
+msgstr "Chemin vers le fichier mmproj du modèle de vision LLM"
+
+#: python-fu-aiedit.py
+msgid "_VAE"
+msgstr "_VAE"
+
+#: python-fu-aiedit.py
+msgid "Path to the VAE model file"
+msgstr "Chemin vers le fichier du modèle VAE"
+
+#: python-fu-aiedit.py
+msgid "_Prompt"
+msgstr "_Invite"
+
+#: python-fu-aiedit.py
+msgid "Describe the edit you want to apply to the image"
+msgstr "Décrivez l'édition que vous souhaitez appliquer à l'image"

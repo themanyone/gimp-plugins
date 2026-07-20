@@ -1,0 +1,109 @@
+# Русский translation for python-fu-aiedit.
+# Copyright (C) 2026
+# This file is distributed under the same license as the python-fu-aiedit package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: python-fu-aiedit\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-19 00:00+0000\n"
+"PO-Revision-Date: 2026-07-19 00:00+0000\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: Русский\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: python-fu-aiedit.py
+msgid "Saving image for processing..."
+msgstr "Сохранение изображения для обработки..."
+
+#: python-fu-aiedit.py
+msgid "Running AI edit (this may take time)..."
+msgstr "Редактирование ИИ (это может занять время)..."
+
+#: python-fu-aiedit.py
+msgid "AI edit failed. Ensure 'sd-cli' is installed and working."
+msgstr "Редактирование ИИ не удалось. Убедитесь, что 'sd-cli' установлен и работает."
+
+#: python-fu-aiedit.py
+msgid "AI edit executed but failed to create the output file."
+msgstr "Редактирование ИИ выполнено, но не удалось создать выходной файл."
+
+#: python-fu-aiedit.py
+msgid "Loading processed image..."
+msgstr "Загрузка обработанного изображения..."
+
+#: python-fu-aiedit.py
+msgid "Failed to load the processed image file."
+msgstr "Не удалось загрузить обработанный файл изображения."
+
+#: python-fu-aiedit.py
+msgid "AI Edit Layer"
+msgstr "Слой редактирования ИИ"
+
+#: python-fu-aiedit.py
+msgid "Transferring layer data..."
+msgstr "Передача данных слоя..."
+
+#: python-fu-aiedit.py
+msgid "AI Edited"
+msgstr "Отредактировано ИИ"
+
+#: python-fu-aiedit.py
+msgid "An unexpected error occurred: %s"
+msgstr "Произошла неожиданная ошибка: %s"
+
+#: python-fu-aiedit.py
+msgid "AI Edit"
+msgstr "Редактирование ИИ"
+
+#: python-fu-aiedit.py
+msgid "Uses sd-cli with a diffusion model and vision LLM to edit the active image or layer based on a text prompt."
+msgstr "Использует sd-cli с диффузионной моделью и визуальной LLM для редактирования активного изображения или слоя на основе текстового запроса."
+
+#: python-fu-aiedit.py
+msgid "AI _Edit..."
+msgstr "Редактирование _ИИ..."
+
+#: python-fu-aiedit.py
+msgid "Diffusion _Model"
+msgstr "Диффузионная _модель"
+
+#: python-fu-aiedit.py
+msgid "Path to the diffusion model GGUF file"
+msgstr "Путь к файлу GGUF диффузионной модели"
+
+#: python-fu-aiedit.py
+msgid "_LLM"
+msgstr "_LLM"
+
+#: python-fu-aiedit.py
+msgid "Path to the LLM GGUF file"
+msgstr "Путь к файлу GGUF LLM"
+
+#: python-fu-aiedit.py
+msgid "LLM _Vision"
+msgstr "_Визуальная LLM"
+
+#: python-fu-aiedit.py
+msgid "Path to the LLM vision model mmproj file"
+msgstr "Путь к файлу mmproj визуальной модели LLM"
+
+#: python-fu-aiedit.py
+msgid "_VAE"
+msgstr "_VAE"
+
+#: python-fu-aiedit.py
+msgid "Path to the VAE model file"
+msgstr "Путь к файлу модели VAE"
+
+#: python-fu-aiedit.py
+msgid "_Prompt"
+msgstr "_Запрос"
+
+#: python-fu-aiedit.py
+msgid "Describe the edit you want to apply to the image"
+msgstr "Опишите редактирование, которое вы хотите применить к изображению"

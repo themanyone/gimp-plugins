@@ -1,0 +1,109 @@
+# Español translation for python-fu-aiedit.
+# Copyright (C) 2026
+# This file is distributed under the same license as the python-fu-aiedit package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: python-fu-aiedit\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-19 00:00+0000\n"
+"PO-Revision-Date: 2026-07-19 00:00+0000\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: Español\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: python-fu-aiedit.py
+msgid "Saving image for processing..."
+msgstr "Guardando imagen para procesar..."
+
+#: python-fu-aiedit.py
+msgid "Running AI edit (this may take time)..."
+msgstr "Editando con IA (esto puede tomar tiempo)..."
+
+#: python-fu-aiedit.py
+msgid "AI edit failed. Ensure 'sd-cli' is installed and working."
+msgstr "La edición IA falló. Asegúrese de que 'sd-cli' esté instalado y funcionando."
+
+#: python-fu-aiedit.py
+msgid "AI edit executed but failed to create the output file."
+msgstr "La edición IA se ejecutó pero no creó el archivo de salida."
+
+#: python-fu-aiedit.py
+msgid "Loading processed image..."
+msgstr "Cargando imagen procesada..."
+
+#: python-fu-aiedit.py
+msgid "Failed to load the processed image file."
+msgstr "Error al cargar el archivo de imagen procesada."
+
+#: python-fu-aiedit.py
+msgid "AI Edit Layer"
+msgstr "Capa de edición IA"
+
+#: python-fu-aiedit.py
+msgid "Transferring layer data..."
+msgstr "Transfiriendo datos de capa..."
+
+#: python-fu-aiedit.py
+msgid "AI Edited"
+msgstr "Editada con IA"
+
+#: python-fu-aiedit.py
+msgid "An unexpected error occurred: %s"
+msgstr "Ocurrió un error inesperado: %s"
+
+#: python-fu-aiedit.py
+msgid "AI Edit"
+msgstr "Edición IA"
+
+#: python-fu-aiedit.py
+msgid "Uses sd-cli with a diffusion model and vision LLM to edit the active image or layer based on a text prompt."
+msgstr "Utiliza sd-cli con un modelo de difusión y LLM de visión para editar la imagen o capa activa según un mensaje de texto."
+
+#: python-fu-aiedit.py
+msgid "AI _Edit..."
+msgstr "Edición _IA..."
+
+#: python-fu-aiedit.py
+msgid "Diffusion _Model"
+msgstr "Modelo de _Difusión"
+
+#: python-fu-aiedit.py
+msgid "Path to the diffusion model GGUF file"
+msgstr "Ruta al archivo GGUF del modelo de difusión"
+
+#: python-fu-aiedit.py
+msgid "_LLM"
+msgstr "_LLM"
+
+#: python-fu-aiedit.py
+msgid "Path to the LLM GGUF file"
+msgstr "Ruta al archivo GGUF del LLM"
+
+#: python-fu-aiedit.py
+msgid "LLM _Vision"
+msgstr "_Visión del LLM"
+
+#: python-fu-aiedit.py
+msgid "Path to the LLM vision model mmproj file"
+msgstr "Ruta al archivo mmproj del modelo de visión LLM"
+
+#: python-fu-aiedit.py
+msgid "_VAE"
+msgstr "_VAE"
+
+#: python-fu-aiedit.py
+msgid "Path to the VAE model file"
+msgstr "Ruta al archivo del modelo VAE"
+
+#: python-fu-aiedit.py
+msgid "_Prompt"
+msgstr "_Prompt"
+
+#: python-fu-aiedit.py
+msgid "Describe the edit you want to apply to the image"
+msgstr "Describe la edición que deseas aplicar a la imagen"
