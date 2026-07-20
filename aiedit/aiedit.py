@@ -316,6 +316,25 @@ def aiedit_func(procedure, run_mode, image, drawables, config, data):
                             widget.set_active(0 if str(value) == "img2img" else 1)
                 except (ValueError, TypeError):
                     pass
+            # Clear widgets not in the preset
+            for key, widget in widgets.items():
+                if key in preset:
+                    continue
+                try:
+                    if isinstance(widget, Gtk.Entry):
+                        widget.set_text("")
+                    elif isinstance(widget, Gtk.SpinButton):
+                        prop = procedure.find_property(key)
+                        if prop:
+                            widget.set_value(prop.default_value)
+                        else:
+                            widget.set_value(0)
+                    elif isinstance(widget, Gtk.TextView):
+                        widget.get_buffer().set_text("", 0)
+                    elif isinstance(widget, Gtk.ComboBoxText):
+                        widget.set_active(0)
+                except (ValueError, TypeError):
+                    pass
 
         def on_preset_changed(combo):
             active = combo.get_active()

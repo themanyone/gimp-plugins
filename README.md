@@ -76,6 +76,8 @@ See [AGENTS.md](AGENTS.md) for the full architecture guide and development notes
 
 ## Customizing
 
+Dialog presets are saved in `~/.config/gimp-plugins/aiedit/presets.json` but you can load, save, and rename them at runtime.
+
 ### Background Remove
 
 - This works with existing tools.
@@ -100,9 +102,11 @@ It is not necessary to edit `upscale/upscale.py` to:
 
 ### AI Image
 
+Edit [aiimage.py](aiimage/aiimage.py) and set `MODELS_PATH` to where your models are. Or just enter the full path to each model into the dialog at runtime and save preferences. We are reusing our ComfyUI models but yours will be somewhere else.
+
 **Z Image Turbo.**
 
-Z Image Turbo is mainly for new image generation. It is not really cut out for Img2Img editing. They are supposed to be coming out with a Z Image Edit model later. And it won't work with Kontext (style transfer). You could edit the code with model locations. Or you can enter them into the dialog at runtime. The dialog can also save and load configurations. So if you already have some models, you can enter them into the appropriate boxes. Try generating small images first.
+Z Image Turbo is mainly for new image generation. It is not really cut out for Img2Img editing. They are supposed to be coming out with a Z Image Edit model later. And it won't work with Kontext (style transfer). You could edit the code with model locations. Or you can enter them into the dialog at runtime. Try generating small images first.
 
 ```python
 DEFAULT_DIFFUSION_MODEL = MODELS_PATH + "/diffusion_models/z-image-turbo-Q5_K_M.gguf"
@@ -111,7 +115,7 @@ DEFAULT_LLM_VISION = ""
 DEFAULT_VAE = MODELS_PATH + "/vae/ae.safetensors"
 ```
 
-You can also generate images using AI Edit models.
+You can also generate images using AI Edit models below.
 
 ### AI Edit
 
