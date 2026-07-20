@@ -10,6 +10,10 @@ A collection of Python-based AI plugins for **GIMP 3** (GNU Image Manipulation P
 | **AI Upscale** (`upscale/`) | Upscales images 4× using AI upscalers | Exports layer → runs PyTorch upscaler (3 backends) → imports result as new upscaled layer | `torch`, `pillow`, `image_gen_aux` / `diffusers` |
 | **Test Plugin** (`test_plugin/`) | Minimal skeleton plugin | Hello-world GIMP 3 `Gimp.PlugIn` subclass | — |
 
+## Security
+
+**Arbitrary command execution.** Plugins for most applications can run any commands. This is not new. Open source relies on the community to find and fix bugs and exploits. You should always review new source code or test in a sandbox. Our plugins are not huge. The `bgremove` code is only 60 lines.
+
 ## Requirements
 
 - **GIMP 3.0+** — these plugins use the GIMP 3 Python API (`gi.require_version('Gimp', '3.0')`)
@@ -20,7 +24,13 @@ A collection of Python-based AI plugins for **GIMP 3** (GNU Image Manipulation P
 
 ### 1. Install plugin dependencies
 
-Each plugin has its own Python dependencies. Install them in GIMP's Python environment:
+The `install.py` installer will attempt to perform these steps. Developers may want fine-grained control & knowledge of install locations so here goes.
+
+**AI Edit**
+
+See [aiedit/README.md](aiedit/README.md)
+
+**Others.** Other plugins have their own Python dependencies. The installer will attempt to install these dependencies with `pip`.
 
 ```shell
 # For Background Remove
@@ -28,28 +38,26 @@ pip install backgroundremover
 
 # For AI Upscale
 pip install image_gen_aux diffusers torch pillow
+
+# For Stable-Diffusion-CPP
 ```
 
 ### 2. Place plugins in GIMP's plug-ins directory
 
+The installer looks for the highest-numbered GIMP/xx.x/plug-ins directory.
+
 ```shell
-cd ~/.config/GIMP/3.0/plug-ins/
 git clone https://github.com/themanyone/gimp-plugins.git
-```
-
-Or symlink individual plugins:
-
-```shell
-ls ~/.config/GIMP # find version number
-# version could be higher than 3.2 now
-ln -s /path/to/gimp-plugins/bgremove ~/.config/GIMP/3.2/plug-ins/
+cd gimp-plugins
+ln -srf bgremove ~/.config/GIMP/3.2/plug-ins/
 ```
 
 ### 3. Restart GIMP
 
 After restart, the plugins appear in the GIMP menus:
-- **Background Remove**: Layer → Transparency → Remove Background...
-- **AI Upscale**: Layer → Upscale...
+- **Background Remove**: Filters → AI → Remove Background...
+- **AI Upscale**: Filters → AI → Upscale...
+- **AI Image Edit**
 - **Test Plugin**: Filters → AI → Test Plugin
 
 ## Plugin architecture

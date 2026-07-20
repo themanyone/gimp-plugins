@@ -164,7 +164,7 @@ def bgremove_func(procedure, run_mode, image, drawables, config, data):
 
 
     except Exception as e:
-        Gimp.message(_(f"An unexpected error occurred: {e}"))
+        Gimp.message(_("An unexpected error occurred: %s") % e)
         return procedure.new_return_values(Gimp.PDBStatusType.ERROR, GLib.Error(str(e)))
 
     finally:
@@ -211,7 +211,7 @@ class BgRemove (Gimp.PlugIn):
                                   "2026")
 
         # Add to the Layer/Transparency menu
-        procedure.add_menu_path ("<Image>/Layer/Transparency")
+        procedure.add_menu_path ("<Image>/Filters/AI")
 
         # No configuration arguments needed for basic execution
 

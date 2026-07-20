@@ -41,11 +41,11 @@ Updated plugin is available from https://github.com/themanyone/bgremove
     git clone https://github.com/themanyone/bgremove.git
     ```
 
-**Restart GIMP:** The "Background Remove" plugin should now appear in your GIMP Layer-->Transparency menu. The AI is not the fastest. It might take 30 seconds to work the first time. You may change what menu to place it on by modifying this line near the bottom of bgremove.py
+**Restart GIMP:** The "Background Remove" plugin should now appear in your GIMP <Image>/Filters/AI/ menu. The AI is not the fastest. It might take 30 seconds to work the first time. You may change what menu to place it on by modifying this line near the bottom of bgremove.py
 
     ```python
         # Add to the Layer/Transparency menu
-        procedure.add_menu_path ("<Image>/Layer/Transparency")
+        procedure.add_menu_path ("<Image>/Filters/AI")
     ```
 
 ## Thanks for trying out bgremove!

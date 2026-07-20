@@ -113,7 +113,7 @@ def get_upscaler(model_id):
 
     cfg = MODEL_CONFIGS.get(model_id)
     if cfg is None:
-        raise ValueError(_(f"Unknown model '{model_id}'. Add it to MODEL_CONFIGS."))
+        raise ValueError(_("Unknown model '%s'. Add it to MODEL_CONFIGS.") % model_id)
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model_type = cfg["type"]
@@ -141,7 +141,7 @@ def get_upscaler(model_id):
         else:
             upscaler.to(device)
     else:
-        raise ValueError(_(f"Unsupported model type '{model_type}' in MODEL_CONFIGS."))
+        raise ValueError(_("Unsupported model type '%s' in MODEL_CONFIGS.") % model_type)
 
     MODEL_CACHE[model_id] = upscaler
     return upscaler
@@ -267,7 +267,7 @@ def upscale_func(procedure, run_mode, image, drawables, config, data):
         image.resize_to_layers()
 
     except Exception as e:
-        Gimp.message(_(f"An unexpected error occurred: {e}"))
+        Gimp.message(_("An unexpected error occurred: %s") % e)
         return procedure.new_return_values(Gimp.PDBStatusType.ERROR, GLib.Error(str(e)))
 
     finally:
@@ -310,7 +310,7 @@ class Upscale (Gimp.PlugIn):
         procedure.set_attribution("Hugging Face (image_gen_aux / diffusers)",
                                   "Plugin Author",
                                   "2026")
-        procedure.add_menu_path("<Image>/Layer")
+        procedure.add_menu_path("<Image>/Filters/AI/")
 
         # Model selection dropdown
         model_choice = Gimp.Choice.new()

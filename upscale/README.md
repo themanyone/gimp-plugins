@@ -45,11 +45,11 @@ Updated plugin is available from https://github.com/themanyone/upscale
     git clone https://github.com/themanyone/upscale.git
     ```
 
-**Restart GIMP:** The "Upscale..." plugin should now appear in your GIMP Layer menu. The AI is not the fastest. It might take 30 seconds or more to automatically download the model the first time it is used. You may change what menu to place it on by modifying this line near the bottom of `upscale.py`:
+**Restart GIMP:** The "Upscale..." plugin should now appear in your GIMP filters menu. The AI is not the fastest. It might take 30 seconds or more to automatically download the model the first time it is used. You may change what menu to place it on by modifying this line near the bottom of `upscale.py`:
 
     ```python
         # Add to the Layer/Transparency menu
-        procedure.add_menu_path ("<Image>/Layer")
+        procedure.add_menu_path ("<Image>/Filters/AI/")
     ```
 
 ## Thanks for trying out upscale!
