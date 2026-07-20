@@ -25,6 +25,9 @@ from gi.repository import Gegl
 from gi.repository import GObject
 from gi.repository import GLib
 from gi.repository import Gio
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
+from gi.repository import Gdk
 
 import sys
 import os
@@ -60,9 +63,93 @@ DEFAULT_VAE = MODELS_PATH + "/vae/ae.safetensors"
 def aiedit_func(procedure, run_mode, image, drawables, config, data):
     if run_mode == Gimp.RunMode.INTERACTIVE:
         GimpUi.init(PLUGIN_NAME)
-        dialog = GimpUi.ProcedureDialog.new(procedure, config, _("AI Edit"))
-        dialog.fill(None)
-        if not dialog.run():
+
+        # Build a custom dialog so we can have a multi-line prompt
+        dialog = Gtk.Dialog(title=_("AI Edit"), transient_for=None)
+        dialog.add_buttons(_("_Cancel"), Gtk.ResponseType.CANCEL,
+                           _("_OK"), Gtk.ResponseType.OK)
+        dialog.set_default_size(600, 500)
+        dialog.set_resizable(True)
+
+        grid = Gtk.Grid()
+        grid.set_border_width(12)
+        grid.set_row_spacing(6)
+        grid.set_column_spacing(8)
+        dialog.get_content_area().add(grid)
+
+        row = 0
+
+        def add_file_row(label_text, prop_name, default):
+            nonlocal row
+            label = Gtk.Label.new_with_mnemonic(label_text)
+            label.set_halign(Gtk.Align.START)
+            label.set_hexpand(False)
+            entry = Gtk.Entry()
+            entry.set_text(config.get_property(prop_name) or default)
+            entry.set_hexpand(True)
+            entry.set_valign(Gtk.Align.CENTER)
+            label.set_mnemonic_widget(entry)
+
+            def on_entry_changed(e, pn=prop_name):
+                config.set_property(pn, e.get_text())
+
+            entry.connect("changed", on_entry_changed)
+            grid.attach(label, 0, row, 1, 1)
+            grid.attach(entry, 1, row, 1, 1)
+            row += 1
+            return entry
+
+        add_file_row(_("Diffusion _Model:"), "diffusion-model", DEFAULT_DIFFUSION_MODEL)
+        add_file_row(_("_LLM:"), "llm", DEFAULT_LLM)
+        add_file_row(_("LLM _Vision:"), "llm-vision", DEFAULT_LLM_VISION)
+        add_file_row(_("_VAE:"), "vae", DEFAULT_VAE)
+        add_file_row(_("T5_X_XL:"), "t5xxl", "")
+        add_file_row(_("_T5:"), "t5", "")
+        add_file_row(_("LoR_A:"), "lora", "")
+        add_file_row(_("Control-_Net:"), "control-net", "")
+
+        # Prompt: multi-line text view
+        prompt_label = Gtk.Label.new_with_mnemonic(_("_Prompt:"))
+        prompt_label.set_halign(Gtk.Align.START)
+        prompt_label.set_valign(Gtk.Align.START)
+        scrolled = Gtk.ScrolledWindow()
+        scrolled.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        scrolled.set_hexpand(True)
+        scrolled.set_vexpand(True)
+        scrolled.set_min_content_height(120)
+
+        text_view = Gtk.TextView()
+        text_view.set_wrap_mode(Gtk.WrapMode.WORD)
+        text_view.set_hexpand(True)
+        text_view.set_vexpand(True)
+        prompt_text = config.get_property("prompt")
+        if prompt_text:
+            text_view.get_buffer().set_text(prompt_text, len(prompt_text))
+
+        def on_text_changed(buf):
+            config.set_property("prompt", buf.get_text(buf.get_start_iter(), buf.get_end_iter(), False))
+
+        text_view.get_buffer().connect("changed", on_text_changed)
+        prompt_label.set_mnemonic_widget(text_view)
+
+        # Shift+Enter submits the dialog, plain Enter inserts a newline
+        def on_text_view_key(view, event, dlg):
+            if event.keyval == Gdk.KEY_Return and (event.state & Gdk.ModifierType.SHIFT_MASK):
+                dlg.response(Gtk.ResponseType.OK)
+                return True
+            return False
+
+        text_view.connect("key-press-event", on_text_view_key, dialog)
+
+        scrolled.add(text_view)
+        grid.attach(prompt_label, 0, row, 1, 1)
+        grid.attach(scrolled, 1, row, 1, 1)
+
+        dialog.show_all()
+        response = dialog.run()
+        dialog.destroy()
+
+        if response != Gtk.ResponseType.OK:
             return procedure.new_return_values(Gimp.PDBStatusType.CANCEL, GLib.Error())
 
     Gimp.context_push()
@@ -93,19 +180,30 @@ def aiedit_func(procedure, run_mode, image, drawables, config, data):
         Gimp.progress_pulse()
 
         # Build sd-cli command
-        command = [
-            "sd-cli",
-            "--diffusion-model", config.get_property("diffusion-model"),
-            "--llm", config.get_property("llm"),
-            "--llm_vision", config.get_property("llm-vision"),
-            "--vae", config.get_property("vae"),
+        command = ["sd-cli"]
+
+        def add_flag(flag, value):
+            if value and value.strip():
+                command.append(flag)
+                command.append(value)
+
+        add_flag("--diffusion-model", config.get_property("diffusion-model"))
+        add_flag("--llm", config.get_property("llm"))
+        add_flag("--llm_vision", config.get_property("llm-vision"))
+        add_flag("--vae", config.get_property("vae"))
+        add_flag("--t5xxl", config.get_property("t5xxl"))
+        add_flag("--t5", config.get_property("t5"))
+        add_flag("--lora", config.get_property("lora"))
+        add_flag("--control-net", config.get_property("control-net"))
+
+        command.extend([
             "--diffusion-fa",
             "-v",
             "--offload-to-cpu",
             "-r", str(input_path),
             "-o", str(output_path),
             "-p", config.get_property("prompt"),
-        ]
+        ])
 
         result = subprocess.run(command, capture_output=True, text=True, check=False)
 
@@ -212,7 +310,7 @@ class AIEdit(Gimp.PlugIn):
         )
         # LLM path
         procedure.add_string_argument(
-            "llm", _("_LLM"), _("Path to the LLM GGUF file"),
+            "llm", _("LLM"), _("Path to the LLM GGUF file"),
             DEFAULT_LLM, GObject.ParamFlags.READWRITE,
         )
         # LLM vision projector
@@ -222,8 +320,28 @@ class AIEdit(Gimp.PlugIn):
         )
         # VAE path
         procedure.add_string_argument(
-            "vae", _("_VAE"), _("Path to the VAE model file"),
+            "vae", _("VAE"), _("Path to the VAE model file"),
             DEFAULT_VAE, GObject.ParamFlags.READWRITE,
+        )
+        # T5XXL encoder path (optional, needed by some models like Kontext)
+        procedure.add_string_argument(
+            "t5xxl", _("T5X_XL"), _("Path to the T5XXL encoder model (optional)"),
+            "", GObject.ParamFlags.READWRITE,
+        )
+        # T5 encoder path (optional)
+        procedure.add_string_argument(
+            "t5", _("_T5"), _("Path to the T5 encoder model (optional)"),
+            "", GObject.ParamFlags.READWRITE,
+        )
+        # LoRA model path (optional)
+        procedure.add_string_argument(
+            "lora", _("LoRA"), _("Path to the LoRA model (optional)"),
+            "", GObject.ParamFlags.READWRITE,
+        )
+        # ControlNet model path (optional)
+        procedure.add_string_argument(
+            "control-net", _("Control-_Net"), _("Path to the ControlNet model (optional)"),
+            "", GObject.ParamFlags.READWRITE,
         )
         # Prompt
         procedure.add_string_argument(
