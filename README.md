@@ -111,6 +111,8 @@ DEFAULT_LLM_VISION = ""
 DEFAULT_VAE = MODELS_PATH + "/vae/ae.safetensors"
 ```
 
+You can also generate images using AI Edit models.
+
 ### AI Edit
 
 Scale images down to 512x512 or lower for testing AI Edit. Larger images will take a lot longer. Try larger images after it works well.
