@@ -58,6 +58,7 @@ ln -srf aiedit ~/.config/GIMP/3.2/plug-ins/
 ### 3. Restart GIMP
 
 After restart, the plugins appear in the GIMP menu:
+- **AI Image**: File → Create → AI Image...
 - **Background Remove**: Filters → AI → Remove Background...
 - **AI Upscale**: Filters → AI → Upscale...
 - **AI Image Edit**: Filters → AI → AI Edit...
@@ -97,11 +98,28 @@ It is not necessary to edit `upscale/upscale.py` to:
 - Tune inference parameters (tile_size, steps, noise_level, etc.)
 ...but you can!
 
+### AI Image
+
+**Z Image Turbo.**
+
+Z Image Turbo is mainly for new image generation. It is not really cut out for Img2Img editing. They are supposed to be coming out with a Z Image Edit model later. And it won't work with Kontext (style transfer). You could edit the code with model locations. Or you can enter them into the dialog at runtime. The dialog can also save and load configurations. So if you already have some models, you can enter them into the appropriate boxes. Try generating small images first.
+
+```python
+DEFAULT_DIFFUSION_MODEL = MODELS_PATH + "/diffusion_models/z-image-turbo-Q5_K_M.gguf"
+DEFAULT_LLM = MODELS_PATH + "/text_encoders/qwen_3_4b.safetensors"
+DEFAULT_LLM_VISION = ""
+DEFAULT_VAE = MODELS_PATH + "/vae/ae.safetensors"
+```
+
 ### AI Edit
 
-Scale it down first. Start with 1024x1024 pixels befor using AI Edit. Larger images will take a lot longer and could crash the edit model.
+Scale images down to 512x512 or lower for testing AI Edit. Larger images will take a lot longer. Try larger images after it works well.
 
-The AI Edit plugin runs `sd-cli` from stable-diffusion.cpp with a diffusion model and vision LLM. Default model paths are configured at the top of `aiedit/aiedit.py`:
+The AI Edit plugin runs `sd-cli` from stable-diffusion.cpp with a diffusion model and vision LLM. Default model paths are configured at the top of `aiedit/aiedit.py` for example:
+
+**Boogu Edit.**
+
+This is a Kontext model. Kontext mode should be set automatically, and Guidance will be set to 0.0. You can change them but it is not recommended. You can also create new images with these by entering them into the AI Image dialog under File -> Create. This model has worked well for adding characters and text to images.
 
 ```python
 DEFAULT_DIFFUSION_MODEL = MODELS_PATH + "/diffusion_models/boogu-edit-dit-Q4_0.gguf"
@@ -110,7 +128,19 @@ DEFAULT_LLM_VISION = LLM_PATH + "/mmproj-F16.gguf"
 DEFAULT_VAE = MODELS_PATH + "/vae/ae.safetensors"
 ```
 
-All four paths can be overridden in the GIMP dialog at runtime. To change the defaults, edit these variables at the top of `aiedit.py` or adjust the `MODELS_PATH` / `LLM_PATH` base directories.
+**Flux 2 Klein.**
+
+This is an older & smaller img2img model but it should work. Img2img mode should be set, and Guidance set to 3.5. Download these models and enter their locations into the image editing dialog and save it. You could also create new images with them the same way.
+
+```python
+diffusion model: flux-2-klein-4b-Q4_K_S.gguf
+clip_l: clip_l.safetensors
+llm: Qwen3-4B-Instruct-2507-UD-Q4_K_XL.gguf
+vae: flux2-vae.safetensors"
+
+```
+
+All paths can be overridden in the GIMP dialog at runtime. To change the defaults, edit these variables at the top of `aiedit.py` or adjust the `MODELS_PATH` / `LLM_PATH` base directories. 
 
 ## License
 

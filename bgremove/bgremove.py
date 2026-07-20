@@ -56,7 +56,7 @@ def bgremove_func(procedure, run_mode, image, drawables, config, data):
     # We will process only the first active drawable for simplicity
     if not drawables:
         # Should not happen if sensitivity mask is set correctly, but handle safety
-        return procedure.new_return_values(Gimp.PDBStatusType.ERROR, GLib.Error("No drawable provided."))
+        return procedure.new_return_values(Gimp.PDBStatusType.EXECUTION_ERROR, GLib.Error("No drawable provided."))
 
     drawable = drawables[0]
 
@@ -113,13 +113,13 @@ def bgremove_func(procedure, run_mode, image, drawables, config, data):
         if process.returncode != 0:
             error_message = _("Background remover failed. Ensure 'backgroundremover' is installed and working.")
             Gimp.message("%s\nError Output: %s" % (error_message, "".join(stderr_lines)))
-            return procedure.new_return_values(Gimp.PDBStatusType.ERROR, GLib.Error(error_message))
+            return procedure.new_return_values(Gimp.PDBStatusType.EXECUTION_ERROR, GLib.Error(error_message))
 
         # 4. Load the processed image back into GIMP
         if not output_path.exists():
             error_message = _("Background remover executed successfully but failed to create the output file.")
             Gimp.message(error_message)
-            return procedure.new_return_values(Gimp.PDBStatusType.ERROR, GLib.Error(error_message))
+            return procedure.new_return_values(Gimp.PDBStatusType.EXECUTION_ERROR, GLib.Error(error_message))
 
         Gimp.progress_set_text(_("Loading processed image..."))
 
@@ -129,7 +129,7 @@ def bgremove_func(procedure, run_mode, image, drawables, config, data):
         if not imported_image:
              error_message = _("Failed to load the processed image file.")
              Gimp.message(error_message)
-             return procedure.new_return_values(Gimp.PDBStatusType.ERROR, GLib.Error(error_message))
+             return procedure.new_return_values(Gimp.PDBStatusType.EXECUTION_ERROR, GLib.Error(error_message))
 
         # Get the new layer (should be the first drawable in the imported image)
         new_layer = imported_image.get_layers()[0]
@@ -173,7 +173,7 @@ def bgremove_func(procedure, run_mode, image, drawables, config, data):
 
     except Exception as e:
         Gimp.message(_("An unexpected error occurred: %s") % e)
-        return procedure.new_return_values(Gimp.PDBStatusType.ERROR, GLib.Error(str(e)))
+        return procedure.new_return_values(Gimp.PDBStatusType.EXECUTION_ERROR, GLib.Error(str(e)))
 
     finally:
         # 5. Cleanup temporary files

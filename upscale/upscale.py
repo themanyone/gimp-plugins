@@ -191,7 +191,7 @@ def upscale_func(procedure, run_mode, image, drawables, config, data):
     image.undo_group_start()
 
     if not drawables:
-        return procedure.new_return_values(Gimp.PDBStatusType.ERROR, GLib.Error("No drawable provided."))
+        return procedure.new_return_values(Gimp.PDBStatusType.EXECUTION_ERROR, GLib.Error("No drawable provided."))
 
     drawable = drawables[0]
     input_path = None
@@ -228,13 +228,13 @@ def upscale_func(procedure, run_mode, image, drawables, config, data):
         if not output_path.exists():
             error_message = _("Upscaling failed to produce the output file.")
             Gimp.message(error_message)
-            return procedure.new_return_values(Gimp.PDBStatusType.ERROR, GLib.Error(error_message))
+            return procedure.new_return_values(Gimp.PDBStatusType.EXECUTION_ERROR, GLib.Error(error_message))
 
         imported_image = Gimp.file_load(run_mode, Gio.File.new_for_path(str(output_path)))
         if not imported_image:
             error_message = _("Failed to load the upscaled image file.")
             Gimp.message(error_message)
-            return procedure.new_return_values(Gimp.PDBStatusType.ERROR, GLib.Error(error_message))
+            return procedure.new_return_values(Gimp.PDBStatusType.EXECUTION_ERROR, GLib.Error(error_message))
 
         new_layer = imported_image.get_layers()[0]
 
@@ -268,7 +268,7 @@ def upscale_func(procedure, run_mode, image, drawables, config, data):
 
     except Exception as e:
         Gimp.message(_("An unexpected error occurred: %s") % e)
-        return procedure.new_return_values(Gimp.PDBStatusType.ERROR, GLib.Error(str(e)))
+        return procedure.new_return_values(Gimp.PDBStatusType.EXECUTION_ERROR, GLib.Error(str(e)))
 
     finally:
         if input_path and input_path.exists():
