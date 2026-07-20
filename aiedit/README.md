@@ -35,11 +35,11 @@ Default paths are configured in the plugin for the author's setup. Change them i
 
 `<Image>/Filters/AI/` — AI Edit...
 
-## Thanks for trying out bgremove!
+## Thanks for trying out gimp-plugins!
 
 * GitHub https://github.com/themanyone
 * YouTube https://www.youtube.com/themanyone
 * Mastodon https://mastodon.social/@themanyone
 * Linkedin https://www.linkedin.com/in/henry-kroll-iii-93860426/
 * Buy me a coffee https://buymeacoffee.com/isreality
-* TheNerdShow.com
+* TheNerdShow.com https://thenerdshow.com

@@ -48,14 +48,11 @@ Updated plugin is available from https://github.com/themanyone/bgremove
         procedure.add_menu_path ("<Image>/Filters/AI")
     ```
 
-## Thanks for trying out bgremove!
+## Thanks for trying out gimp-plugins!
+
 * GitHub https://github.com/themanyone
 * YouTube https://www.youtube.com/themanyone
 * Mastodon https://mastodon.social/@themanyone
 * Linkedin https://www.linkedin.com/in/henry-kroll-iii-93860426/
 * Buy me a coffee https://buymeacoffee.com/isreality
-* TheNerdShow.com
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+* TheNerdShow.com https://thenerdshow.com

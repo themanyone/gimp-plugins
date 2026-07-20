@@ -52,7 +52,7 @@ Updated plugin is available from https://github.com/themanyone/upscale
         procedure.add_menu_path ("<Image>/Filters/AI/")
     ```
 
-## Thanks for trying out upscale!
+## Thanks for trying out bgremove!
 * GitHub https://github.com/themanyone
 * YouTube https://www.youtube.com/themanyone
 * Mastodon https://mastodon.social/@themanyone
@@ -60,6 +60,3 @@ Updated plugin is available from https://github.com/themanyone/upscale
 * Buy me a coffee https://buymeacoffee.com/isreality
 * TheNerdShow.com
 
-## License
-
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.

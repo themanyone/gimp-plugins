@@ -8,7 +8,7 @@ A monorepo of GIMP 3 plugins written in Python via PyGObject introspection. Each
 
 | Plugin | Directory | Function | External Dependencies | License |
 |--------|-----------|----------|----------------------|---------|
-| Background Remove | `bgremove/` | Saves layer → runs external `backgroundremover` CLI → loads result as new transparent layer | `backgroundremover` CLI tool (PyPI) | MIT |
+| Background Remove | `bgremove/` | Saves layer → runs external `backgroundremover` CLI → loads result as new transparent layer | `backgroundremover` CLI tool (PyPI) | GPLv3 |
 | AI Upscale | `upscale/` | Saves layer → runs PyTorch upscaler (3 backends) → loads result as new upscaled layer | `torch`, `pillow`, `image_gen_aux` / `diffusers` (Hugging Face) | GPLv3 |
 | Test Plugin | `test_plugin/` | Minimal skeleton showing `Gimp.PlugIn` subclass | None | — |
 
