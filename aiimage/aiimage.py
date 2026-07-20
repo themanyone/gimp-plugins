@@ -55,6 +55,8 @@ LLM_PATH = "/win/models/Qwen3-VL-8B-Instruct-UD-IQ3_XXS"
 
 # Default paths
 DEFAULT_DIFFUSION_MODEL = MODELS_PATH + "/diffusion_models/boogu-edit-dit-Q4_0.gguf"
+DEFAULT_LLM = LLM_PATH + "/Qwen3-VL-8B-Instruct-UD-IQ3_XXS.gguf"
+DEFAULT_LLM_VISION = LLM_PATH + "/mmproj-F16.gguf"
 DEFAULT_VAE = MODELS_PATH + "/vae/ae.safetensors"
 
 def aiimage_func(procedure, run_mode, image, drawables, config, data):
@@ -117,6 +119,8 @@ def aiimage_func(procedure, run_mode, image, drawables, config, data):
             return spin
 
         add_file_row(_("Diffusion _Model:"), "diffusion-model", DEFAULT_DIFFUSION_MODEL)
+        add_file_row(_("_LLM:"), "llm", DEFAULT_LLM)
+        add_file_row(_("LLM _Vision:"), "llm-vision", DEFAULT_LLM_VISION)
         add_file_row(_("_VAE:"), "vae", DEFAULT_VAE)
         add_file_row(_("T5_X_XL:"), "t5xxl", "")
         add_file_row(_("_T5:"), "t5", "")
@@ -187,6 +191,8 @@ def aiimage_func(procedure, run_mode, image, drawables, config, data):
                 command.append(value)
 
         add_flag("--diffusion-model", config.get_property("diffusion-model"))
+        add_flag("--llm", config.get_property("llm"))
+        add_flag("--llm_vision", config.get_property("llm-vision"))
         add_flag("--vae", config.get_property("vae"))
         add_flag("--t5xxl", config.get_property("t5xxl"))
         add_flag("--t5", config.get_property("t5"))
@@ -202,11 +208,19 @@ def aiimage_func(procedure, run_mode, image, drawables, config, data):
             "-p", config.get_property("prompt"),
         ])
 
-        result = subprocess.run(command, capture_output=True, text=True, check=False)
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        stderr_lines = []
+        for line in process.stderr:
+            stderr_lines.append(line)
+            line = line.rstrip()
+            if line:
+                Gimp.progress_set_text(line)
+                Gimp.progress_pulse()
+        process.wait()
 
-        if result.returncode != 0:
+        if process.returncode != 0:
             error_message = _("AI image generation failed. Ensure 'sd-cli' is installed and working.")
-            Gimp.message("%s\nError Output: %s" % (error_message, result.stderr))
+            Gimp.message("%s\nError Output: %s" % (error_message, "".join(stderr_lines)))
             return procedure.new_return_values(Gimp.PDBStatusType.ERROR, GLib.Error(error_message))
 
         if not output_path.exists():
@@ -230,8 +244,6 @@ def aiimage_func(procedure, run_mode, image, drawables, config, data):
         return procedure.new_return_values(Gimp.PDBStatusType.ERROR, GLib.Error(str(e)))
 
     finally:
-        if input_path and input_path.exists():
-            os.remove(input_path)
         if output_path and output_path.exists():
             os.remove(output_path)
 
@@ -250,9 +262,14 @@ class AIImage(Gimp.PlugIn):
     def do_create_procedure(self, name):
         Gegl.init(None)
 
-        procedure = Gimp.Procedure.new(self, name,
-                                       Gimp.PDBProcType.PLUGIN,
-                                       aiimage_func, None)
+        procedure = Gimp.ImageProcedure.new(self, name,
+                                            Gimp.PDBProcType.PLUGIN,
+                                            aiimage_func, None)
+
+        procedure.set_sensitivity_mask(
+            Gimp.ProcedureSensitivityMask.NO_IMAGE
+        )
+        procedure.set_image_types("*")
 
         procedure.set_documentation(
             _("AI Image"),
@@ -269,6 +286,16 @@ class AIImage(Gimp.PlugIn):
         procedure.add_string_argument(
             "diffusion-model", _("Diffusion _Model"), _("Path to the diffusion model GGUF file"),
             DEFAULT_DIFFUSION_MODEL, GObject.ParamFlags.READWRITE,
+        )
+        # LLM path
+        procedure.add_string_argument(
+            "llm", _("LLM"), _("Path to the LLM GGUF file"),
+            DEFAULT_LLM, GObject.ParamFlags.READWRITE,
+        )
+        # LLM vision projector
+        procedure.add_string_argument(
+            "llm-vision", _("LLM _Vision"), _("Path to the LLM vision model mmproj file"),
+            DEFAULT_LLM_VISION, GObject.ParamFlags.READWRITE,
         )
         # VAE path
         procedure.add_string_argument(
@@ -293,12 +320,12 @@ class AIImage(Gimp.PlugIn):
         # Width
         procedure.add_int_argument(
             "width", _("_Width"), _("Image width in pixels"),
-            1024, 64, 8192, 1024, GObject.ParamFlags.READWRITE,
+            64, 8192, 1024, GObject.ParamFlags.READWRITE,
         )
         # Height
         procedure.add_int_argument(
             "height", _("_Height"), _("Image height in pixels"),
-            1024, 64, 8192, 1024, GObject.ParamFlags.READWRITE,
+            64, 8192, 1024, GObject.ParamFlags.READWRITE,
         )
         # Prompt
         procedure.add_string_argument(

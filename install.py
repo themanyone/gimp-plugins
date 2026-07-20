@@ -37,9 +37,9 @@ def _find_sd_repo() -> Path:
 
 PLUGIN_DEPS = {
     "bgremove": {
-        "pip": ["backgroundremover"],
+        "pip": ["numpy<2.5", "numba>=0.66.0", "backgroundremover"],
         "cli": [],
-        "cmd": "pip install --user backgroundremover",
+        "cmd": "pip install --user 'numpy<2.5' 'numba>=0.66.0' backgroundremover",
     },
     "upscale": {
         "pip": ["image_gen_aux", "diffusers", "torch", "pillow"],

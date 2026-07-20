@@ -205,11 +205,19 @@ def aiedit_func(procedure, run_mode, image, drawables, config, data):
             "-p", config.get_property("prompt"),
         ])
 
-        result = subprocess.run(command, capture_output=True, text=True, check=False)
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        stderr_lines = []
+        for line in process.stderr:
+            stderr_lines.append(line)
+            line = line.rstrip()
+            if line:
+                Gimp.progress_set_text(line)
+                Gimp.progress_pulse()
+        process.wait()
 
-        if result.returncode != 0:
+        if process.returncode != 0:
             error_message = _("AI edit failed. Ensure 'sd-cli' is installed and working.")
-            Gimp.message(f"{error_message}\nError Output: {result.stderr}")
+            Gimp.message("%s\nError Output: %s" % (error_message, "".join(stderr_lines)))
             return procedure.new_return_values(Gimp.PDBStatusType.ERROR, GLib.Error(error_message))
 
         if not output_path.exists():

@@ -10,6 +10,8 @@ A monorepo of GIMP 3 plugins written in Python via PyGObject introspection. Each
 |--------|-----------|----------|----------------------|---------|
 | Background Remove | `bgremove/` | Saves layer → runs external `backgroundremover` CLI → loads result as new transparent layer | `backgroundremover` CLI tool (PyPI) | GPLv3 |
 | AI Upscale | `upscale/` | Saves layer → runs PyTorch upscaler (3 backends) → loads result as new upscaled layer | `torch`, `pillow`, `image_gen_aux` / `diffusers` (Hugging Face) | GPLv3 |
+| AI Image | `aiimage/` | Text-to-image generation via `sd-cli` → creates new GIMP image | `sd-cli` CLI tool | GPLv3 |
+| AI Edit | `aiedit/` | Image editing via `sd-cli` with diffusion model + vision LLM | `sd-cli` CLI tool | GPLv3 |
 | Test Plugin | `test_plugin/` | Minimal skeleton showing `Gimp.PlugIn` subclass | None | — |
 
 ---
@@ -152,6 +154,26 @@ output_path = temp_dir / f"gimp_<name>_output_{os.getpid()}.png"
 - Entry: `Gimp.main(TestPlugin.__gtype_name__, sys.argv)`
 - No i18n, no undo, minimal
 
+### aiedit (`aiedit.py`)
+
+- Image editing via `sd-cli` with diffusion model + vision LLM
+- **Interactive mode** — custom `Gtk.Dialog` with model paths, multi-line prompt, Shift+Enter submit
+- Takes an existing image, exports to temp PNG, runs `sd-cli` with `-r <input>`, loads result as new layer
+- Menu: `<Image>/Filters/AI/AI Edit...`
+- Procedure name: `python-fu-aiedit`
+- Entry: `Gimp.main(AIEdit.__gtype_name__, sys.argv)`
+
+### aiimage (`aiimage.py`)
+
+- **Creation plugin** — generates new images from scratch via `sd-cli` text-to-image
+- **Interactive mode** — custom `Gtk.Dialog` with model paths, width/height spin buttons, multi-line prompt, Shift+Enter submit
+- Uses `Gimp.ImageProcedure` with `Gimp.ProcedureSensitivityMask.NO_IMAGE` — available even with no image open
+- Creates a new `Gimp.Display` from the generated file (no undo context needed)
+- Menu: `<Image>/File/Create/AI Image...`
+- Procedure name: `python-fu-aiimage`
+- Entry: `Gimp.main(AIImage.__gtype_name__, sys.argv)`
+- Entry point must be executable (`chmod +x`) for GIMP to discover it
+
 ---
 
 ## Gotchas & Non-Obvious Patterns
@@ -231,3 +253,33 @@ Both `bgremove.py` and `test_plugin.py` serve as templates for new plugins:
 - **test_plugin pattern**: Minimal `Gimp.PlugIn` skeleton to copy-paste
 
 The common flow (save temp → process → load result → new layer → copy pixels) is reusable for any plugin that transforms image data.
+
+---
+
+## Key Developer Doc Locations
+
+### GIMP 3 Python API
+
+| Resource | URL |
+|----------|-----|
+| GIMP 3 API Reference | https://developer.gimp.org/api/3.0/ |
+| `Gimp.Procedure` / `Gimp.ImageProcedure` | https://developer.gimp.org/api/3.0/class.ImageProcedure.html |
+| `Procedure.add_menu_path()` | https://developer.gimp.org/api/3.0/libgimp/method.Procedure.add_menu_path.html |
+| `Procedure.set_sensitivity_mask()` | https://developer.gimp.org/api/3.0/libgimp/method.Procedure.set_sensitivity_mask.html |
+| `ProcedureSensitivityMask` flags | https://developer.gimp.org/api/3.0/libgimp/flags.ProcedureSensitivityMask.html |
+| `Gimp.PDBProcType` enum | https://developer.gimp.org/api/3.0/libgimp/enum.PDBProcType.html |
+| Python Plug-in Tutorial | https://docs.gimp.org/3.0/en/gimp-using-python-plug-in-tutorial.html |
+| GIMP Developer: Python Plug-Ins | https://developer.gimp.org/resource/writing-a-plug-in/tutorial-python/ |
+
+### Useful shell commands
+
+```bash
+# List all registered procedures matching a pattern
+gimp -c -b '(plug-in-info "python-fu-*")' -b '(gimp-quit 0)'
+
+# Query a specific procedure's parameters
+gimp -c -b '(plug-in-query "python-fu-aiimage")' -b '(gimp-quit 0)'
+
+# Check GIMP plugin directory
+echo ~/.config/GIMP/3.0/plug-ins/
+```

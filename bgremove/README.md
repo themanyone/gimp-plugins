@@ -23,9 +23,10 @@ A plugin for GIMP (GNU Image Manipulation Program).
 ## Dependencies
 
 1. **Before installing**, make sure you have Gimp version 3 or above. That should ensure you have the necessary Python environment and any required libraries. 
-3. **Follow the instructions** from https://github.com/nadermx/backgroundremover. They recommend `docker` but you could also use venv or an existing virtual environment.
+2. **Install `backgroundremover`** and its dependencies. On Python 3.14+, the `numba` dev build may be incompatible with newer `numpy` versions. Install compatible versions:
 	```shell
 	pip install --upgrade pip
+	pip install "numpy<2.5" "numba>=0.66.0"
 	pip install backgroundremover
 	```
 3. **Find `backgroundremover`** and install it somewhere in your path. We linked it to `~/.local/bin/`.
