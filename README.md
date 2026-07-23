@@ -11,6 +11,7 @@ A collection of Python-based AI plugins for **GIMP 3** (GNU Image Manipulation P
 | **Background Remove** (`bgremove/`) | Removes backgrounds from images using AI | Exports layer → runs `backgroundremover` CLI → imports result as new transparent layer | `backgroundremover` (PyPI) |
 | **AI Upscale** (`upscale/`) | Upscales images 4× using AI upscalers | Exports layer → runs PyTorch upscaler (3 backends) → imports result as new upscaled layer | `torch`, `pillow`, `image_gen_aux` / `diffusers` |
 | **AI Edit** (`aiedit/`) | Edits images using text prompts via a diffusion model and vision LLM | Exports layer → runs `sd-cli` with a diffusion GGUF model + vision LLM → imports edited result as new layer | `sd-cli` (stable-diffusion.cpp), diffusion GGUF, vision LLM GGUF, VAE |
+| **SD Server** (`sd-server/`) | Generates/edits images via stable-diffusion.cpp server API | Connects to `sd-server` HTTP API; supports txt2img, img2img, and Kontext/Boogu-style reference editing | `sd-server` (stable-diffusion.cpp), `requests` |
 | **Test Plugin** (`test_plugin/`) | Minimal skeleton plugin | Hello-world GIMP 3 `Gimp.PlugIn` subclass | — |
 
 ## Security
@@ -41,17 +42,20 @@ pip install backgroundremover
 
 # For AI Upscale
 pip install image_gen_aux diffusers torch pillow
+
+# For SD Server
+pip install requests
 ```
 
 ### 2. Place plugins in GIMP's plug-ins directory
 
-The installer looks for the highest-numbered GIMP/xx.x/plug-ins directory.
+The installer looks for the highest-numbered GIMP/xx.x/plug-ins directory. Install whichever plugins you need. If you have `sd-server` running, you might be able to get by with just `bgremove` and `sd-server` plugins.
 
 ```shell
 git clone https://github.com/themanyone/gimp-plugins.git
 cd gimp-plugins
 ln -srf bgremove ~/.config/GIMP/3.2/plug-ins/
-ln -srf aiedit ~/.config/GIMP/3.2/plug-ins/
+ln -srf sd-server ~/.config/GIMP/3.2/plug-ins/
 # install additional plugins the same way
 ```
 
@@ -61,7 +65,8 @@ After restart, the plugins appear in the GIMP menu:
 - **AI Image**: File → Create → AI Image...
 - **Background Remove**: Filters → AI → Remove Background...
 - **AI Upscale**: Filters → AI → Upscale...
-- **AI Image Edit**: Filters → AI → AI Edit...
+- **AI Edit**: Filters → AI → AI Edit...
+- **SD Server**: Filters → AI → SD Server...
 - **Test Plugin**: Filters → AI → Test Plugin
 
 ## Plugin architecture
@@ -73,6 +78,34 @@ export layer as temp PNG → process (CLI or ML) → load result → new layer �
 ```
 
 See [AGENTS.md](AGENTS.md) for the full architecture guide and development notes.
+
+### SD Server
+
+The SD Server plugin connects to a running `sd-server` instance from [stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp) via its HTTP API. It supports:
+
+- **txt2img** — generate new images from a text prompt
+- **img2img** — edit the current layer using a diffusion model
+- **Reference-based editing** — Kontext, Boogu, Z-Image models (uses `extra_images` for reference conditioning)
+
+Start the server first, then use the plugin from GIMP:
+
+```bash
+sd-server --diffusion-model path/to/model.gguf --vae path/to/vae.safetensors \
+  --llm path/to/llm.gguf --llm_vision path/to/mmproj.gguf \
+  --diffusion-fa --offload-to-cpu -v
+```
+
+The plugin auto-detects the loaded model and available features via `/sdcpp/v1/capabilities`. The model name is shown in the dialog.
+
+**API Compatibility.** Works with any server that implements the stable-diffusion.cpp API:
+
+| Endpoint | Purpose |
+|----------|---------|
+| `/sdapi/v1/txt2img` | Text-to-image generation |
+| `/sdapi/v1/img2img` | Image-to-image / reference editing |
+| `/sdcpp/v1/capabilities` | Model & feature detection |
+
+**OpenAI-compatible servers.** The plugin can also connect to any OpenAI-compatible `/v1/images/generations` endpoint (not just sd.cpp) — just point the Server URL field to any compatible API.
 
 ## Customizing
 
@@ -90,7 +123,7 @@ Don't want to use `backgroundremover`?
 
 ### AI Upscale
 
-Scale it down first. Start with 1024x1024 pixels to upscale to 4K resolution. Larger images will take a lot longer. And without enough VRAM many upscalers will crash.
+Scale it down first. At most, start with 1024x1024 pixels to upscale to 4K resolution. Larger images will take a lot longer. And without enough VRAM many upscalers will crash.
 
 The Upscale plugin prompts you to choose an AI model when you use the plugin in Gimp. And it allows you to save preferences. Models are downloaded automatically, so it might take some time to upscale your first image.
 
@@ -101,6 +134,8 @@ It is not necessary to edit `upscale/upscale.py` to:
 ...but you can!
 
 ### AI Image
+
+The `aiimage` plugin calls `sd-cli` from the command line. It's a bit more complicated to use. But it offers more flexibility and of course it doesn't require a server.
 
 Edit [aiimage.py](aiimage/aiimage.py) and set `MODELS_PATH` to where your models are. Or just enter the full path to each model into the dialog at runtime and save preferences. We are reusing our ComfyUI models but yours will be somewhere else.
 
@@ -119,9 +154,9 @@ You can also generate images using AI Edit models below.
 
 ### AI Edit
 
-Scale images down to 512x512 or lower for testing AI Edit. Larger images will take a lot longer. Try larger images after it works well.
+Like `aiimage` the `aiedit` plugin calls `sd-cli` from the command line. Scale images down to 512x512 or lower for testing AI Edit. Larger images will take a lot longer. Try larger images after it works well.
 
-The AI Edit plugin runs `sd-cli` from stable-diffusion.cpp with a diffusion model and vision LLM. Default model paths are configured at the top of `aiedit/aiedit.py` for example:
+Set up the AI Edit with a diffusion model and vision LLM. Default model paths are configured at the top of `aiedit/aiedit.py` for example:
 
 **Boogu Edit.**
 
