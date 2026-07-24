@@ -632,6 +632,7 @@ def aiedit_func(procedure, run_mode, image, drawables, config, data):
         final_layer.set_visible(True)
         drawable.set_visible(False)
         image.active_layer = final_layer
+        image.resize_to_layers()
 
     except Exception as e:
         Gimp.message(_("An unexpected error occurred: %s") % e)

@@ -563,6 +563,7 @@ def _edit_layer(procedure, run_mode, image, drawables, config):
         final_layer.set_visible(True)
         drawable.set_visible(False)
         image.active_layer = final_layer
+        image.resize_to_layers()
 
     except Exception as e:
         Gimp.message(_("Error: %s") % e)
