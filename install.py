@@ -20,6 +20,7 @@ PLUGINS_DIR = Path(__file__).resolve().parent
 PLUGIN_DIRS = sorted(
     d for d in PLUGINS_DIR.iterdir()
     if d.is_dir() and not d.name.startswith(".") and d.name != "__pycache__"
+    and d.name != "test_plugin"
 )
 SKIP_DIRS = {"locale", "images", ".venv", "__pycache__"}
 
@@ -50,11 +51,6 @@ PLUGIN_DEPS = {
         "pip": [],
         "cli": ["sd-cli"],
         "cmd": "sd-cli binary (see https://github.com/leejet/stable-diffusion.cpp)",
-    },
-    "test_plugin": {
-        "pip": [],
-        "cli": [],
-        "cmd": None,
     },
 }
 
