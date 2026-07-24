@@ -52,6 +52,11 @@ PLUGIN_DEPS = {
         "cli": ["sd-cli"],
         "cmd": "sd-cli binary (see https://github.com/leejet/stable-diffusion.cpp)",
     },
+    "sd-server": {
+        "pip": ["requests"],
+        "cli": [],
+        "cmd": "pip install --user requests",
+    },
 }
 
 

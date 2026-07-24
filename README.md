@@ -18,6 +18,8 @@ A collection of Python-based AI plugins for **GIMP 3** (GNU Image Manipulation P
 
 **Arbitrary command execution.** Plugins for most applications can run any commands. This is not new. Open source relies on the community to find and fix bugs and exploits. You should always review new source code or test in a sandbox.
 
+Don't download from untrusted places. The official locaiton for these plugins is https://github.com/themanyone/gimp-plugins
+
 ## Requirements
 
 - **GIMP 3.0+** — these plugins use the GIMP 3 Python API (`gi.require_version('Gimp', '3.0')`)
@@ -26,9 +28,22 @@ A collection of Python-based AI plugins for **GIMP 3** (GNU Image Manipulation P
 
 ## Installation
 
-### 1. Install plugin dependencies
+**Installer.** The `install.py` installer (experimental) will attempt to install missing dependencies and put things in the right places. If something is not right, check Manual Install steps below & [report issues](https://github.com/themanyone/gimp-plugins/issues).
 
-The `install.py` installer (experimental) will attempt to perform these steps. Developers & power users may want fine-grained control & knowledge of install locations here:
+### 3. Restart GIMP
+
+After restart, plugins appear in the GIMP menus:
+- **AI Image**: File → Create → AI Image...
+- **Background Remove**: Filters → AI → Remove Background...
+- **AI Upscale**: Filters → AI → Upscale...
+- **AI Edit**: Filters → AI → AI Edit...
+- **SD Server**: Filters → AI → SD Server...
+- **Test Plugin**: Filters → AI → Test Plugin
+
+**Keyboard Shortcuts.** Go to Edit -> Keyboard Shortcuts and type the name of the plugin.
+
+## Manual Install
+Developers & power users may want fine-grained control & knowledge of install locations here:
 
 **AI Edit**
 
@@ -58,16 +73,6 @@ ln -srf bgremove ~/.config/GIMP/3.2/plug-ins/
 ln -srf sd-server ~/.config/GIMP/3.2/plug-ins/
 # install additional plugins the same way
 ```
-
-### 3. Restart GIMP
-
-After restart, the plugins appear in the GIMP menu:
-- **AI Image**: File → Create → AI Image...
-- **Background Remove**: Filters → AI → Remove Background...
-- **AI Upscale**: Filters → AI → Upscale...
-- **AI Edit**: Filters → AI → AI Edit...
-- **SD Server**: Filters → AI → SD Server...
-- **Test Plugin**: Filters → AI → Test Plugin
 
 ## Plugin architecture
 
