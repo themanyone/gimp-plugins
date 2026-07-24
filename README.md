@@ -160,7 +160,7 @@ Scale images down to 256x256 or lower for testing AI Edit. Editing large images 
 
 **Boogu Edit.**
 
-This is a Kontext model. Kontext mode should be set automatically, and Guidance will be set to 0.0. You can change them but it is not recommended. You can also create new images with these This model has worked well for adding characters and text to images.
+This is a Kontext model. Kontext mode should be set automatically, and Guidance will be set to 0.0. You can change them but it is not recommended. You can also create new images with these. This model has worked well for adding characters and text to images.
 
 ```python
 DEFAULT_DIFFUSION_MODEL = MODELS_PATH + "/diffusion_models/boogu-edit-dit-Q4_0.gguf"
