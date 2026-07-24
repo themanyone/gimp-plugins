@@ -97,7 +97,7 @@ sd-server --diffusion-model path/to/model.gguf --vae path/to/vae.safetensors \
 
 The plugin auto-detects the loaded model and available features via `/sdcpp/v1/capabilities`. The model name is shown in the dialog.
 
-**API Compatibility.** Works with any server that implements the stable-diffusion.cpp API:
+**API Compatibility.** Works with many servers that implement the stable-diffusion API:
 
 | Endpoint | Purpose |
 |----------|---------|
@@ -105,11 +105,7 @@ The plugin auto-detects the loaded model and available features via `/sdcpp/v1/c
 | `/sdapi/v1/img2img` | Image-to-image / reference editing |
 | `/sdcpp/v1/capabilities` | Model & feature detection |
 
-**OpenAI-compatible servers.** The plugin can also connect to any OpenAI-compatible `/v1/images/generations` endpoint (not just sd.cpp) — just point the Server URL field to any compatible API.
-
-## Customizing
-
-Dialog presets are saved in `~/.config/gimp-plugins/aiedit/presets.json` but you can load, save, and rename them at runtime.
+**OpenAI-compatible servers.** The plugin can also connect to any OpenAI-compatible `/v1/images/generations` endpoint (not just `sd-server`) — just point the Server URL field to any compatible API.
 
 ### Background Remove
 
@@ -123,7 +119,7 @@ Don't want to use `backgroundremover`?
 
 ### AI Upscale
 
-Scale it down first. At most, start with 1024x1024 pixels to upscale to 4K resolution. Larger images will take a lot longer. And without enough VRAM many upscalers will crash.
+Try small images first. Then try 1024x1024 pixels to upscale to 4K resolution. Larger images will take a lot longer. And without enough VRAM upscale will fail.
 
 The Upscale plugin prompts you to choose an AI model when you use the plugin in Gimp. And it allows you to save preferences. Models are downloaded automatically, so it might take some time to upscale your first image.
 
@@ -135,13 +131,13 @@ It is not necessary to edit `upscale/upscale.py` to:
 
 ### AI Image
 
-The `aiimage` plugin calls `sd-cli` from the command line. It's a bit more complicated to use. But it offers more flexibility and of course it doesn't require a server.
+The `aiimage` plugin calls `sd-cli` from the command line. It's a bit more complicated to use. But it offers more flexibility and of course it doesn't require a server. Fomd the AI Image dialog under File -> Create.
 
 Edit [aiimage.py](aiimage/aiimage.py) and set `MODELS_PATH` to where your models are. Or just enter the full path to each model into the dialog at runtime and save preferences. We are reusing our ComfyUI models but yours will be somewhere else.
 
 **Z Image Turbo.**
 
-Z Image Turbo is mainly for new image generation. It is not really cut out for Img2Img editing. They are supposed to be coming out with a Z Image Edit model later. And it won't work with Kontext (style transfer). You could edit the code with model locations. Or you can enter them into the dialog at runtime. Try generating small images first.
+Z Image Turbo is for fast image generation in 4-6 steps. We can't wait for a Z Image Edit model. Enter default model locations into `aiimage/aiimage.py`, or enter them into the dialog at runtime. Try small images first.
 
 ```python
 DEFAULT_DIFFUSION_MODEL = MODELS_PATH + "/diffusion_models/z-image-turbo-Q5_K_M.gguf"
@@ -150,17 +146,17 @@ DEFAULT_LLM_VISION = ""
 DEFAULT_VAE = MODELS_PATH + "/vae/ae.safetensors"
 ```
 
-You can also generate images using AI Edit models below.
+AI Edit models may also be used.
 
 ### AI Edit
 
-Like `aiimage` the `aiedit` plugin calls `sd-cli` from the command line. Scale images down to 512x512 or lower for testing AI Edit. Larger images will take a lot longer. Try larger images after it works well.
+Like `aiimage` the `aiedit` plugin calls `sd-cli` from the command line. Find the AI Edit plugin under Filters -> AI.
 
-Set up the AI Edit with a diffusion model and vision LLM. Default model paths are configured at the top of `aiedit/aiedit.py` for example:
+Scale images down to 256x256 or lower for testing AI Edit. Editing large images takes longer. Default model paths may be edited into the top of `aiedit/aiedit.py` or enter the paths into the dialog at run time.
 
 **Boogu Edit.**
 
-This is a Kontext model. Kontext mode should be set automatically, and Guidance will be set to 0.0. You can change them but it is not recommended. You can also create new images with these by entering them into the AI Image dialog under File -> Create. This model has worked well for adding characters and text to images.
+This is a Kontext model. Kontext mode should be set automatically, and Guidance will be set to 0.0. You can change them but it is not recommended. You can also create new images with these This model has worked well for adding characters and text to images.
 
 ```python
 DEFAULT_DIFFUSION_MODEL = MODELS_PATH + "/diffusion_models/boogu-edit-dit-Q4_0.gguf"
@@ -171,7 +167,7 @@ DEFAULT_VAE = MODELS_PATH + "/vae/ae.safetensors"
 
 **Flux 2 Klein.**
 
-This is an older & smaller img2img model but it should work. Img2img mode should be set, and Guidance set to 3.5. Download these models and enter their locations into the image editing dialog and save it. You could also create new images with them the same way.
+This is an older & smaller img2img model. But it should work. Img2img mode should be set, and Guidance set to 3.5. Download these models and enter their locations into the image editing dialog and save it.
 
 ```python
 diffusion model: flux-2-klein-4b-Q4_K_S.gguf
@@ -181,7 +177,9 @@ vae: flux2-vae.safetensors"
 
 ```
 
-All paths can be overridden in the GIMP dialog at runtime. To change the defaults, edit these variables at the top of `aiedit.py` or adjust the `MODELS_PATH` / `LLM_PATH` base directories. 
+**Customizing.**
+
+Presets are saved in `~/.config/gimp-plugins/aiedit/presets.json` but you can load, save, and rename settings at runtime. You may also modify these plugins to show different defaults if you want.
 
 ## License
 
