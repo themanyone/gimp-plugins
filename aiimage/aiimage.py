@@ -157,7 +157,7 @@ def aiimage_func(procedure, run_mode, image, drawables, config, data):
             label.set_halign(Gtk.Align.START)
             label.set_hexpand(False)
             adjustment = Gtk.Adjustment(value=default, lower=min_val,
-                                        upper=max_val, step_incr=1, page_incr=64)
+                                        upper=max_val, step_increment=1, page_increment=64)
             spin = Gtk.SpinButton(adjustment=adjustment)
             spin.set_hexpand(True)
             spin.set_valign(Gtk.Align.CENTER)
@@ -179,7 +179,7 @@ def aiimage_func(procedure, run_mode, image, drawables, config, data):
             label.set_halign(Gtk.Align.START)
             label.set_hexpand(False)
             adjustment = Gtk.Adjustment(value=default, lower=min_val,
-                                        upper=max_val, step_incr=0.1, page_incr=10)
+                                        upper=max_val, step_increment=0.1, page_increment=10)
             spin = Gtk.SpinButton(adjustment=adjustment, digits=1)
             spin.set_hexpand(True)
             spin.set_valign(Gtk.Align.CENTER)
