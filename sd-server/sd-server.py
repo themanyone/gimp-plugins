@@ -98,31 +98,65 @@ def sd_server_func(procedure, run_mode, image, drawables, config, data):
         grid.attach(server_entry, 1, row, 1, 1)
         row += 1
 
-        # --- Model info label ---
-        model_info_label = Gtk.Label(label="")
+        # --- Model info spinner + label ---
+        model_info_hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=4)
+        model_info_hbox.set_hexpand(True)
+
+        query_spinner = Gtk.Spinner()
+        query_spinner.start()
+        model_info_hbox.pack_start(query_spinner, False, False, 0)
+
+        model_info_label = Gtk.Label(label=_("Querying server..."))
         model_info_label.set_halign(Gtk.Align.START)
         model_info_label.set_hexpand(True)
         model_info_label.set_ellipsize(3)
-        grid.attach(model_info_label, 0, row, 2, 1)
+        model_info_hbox.pack_start(model_info_label, True, True, 0)
+
+        grid.attach(model_info_hbox, 0, row, 2, 1)
         row += 1
 
-        # Probe server capabilities (GLib.idle_add to let Gtk init finish)
-        def probe_caps():
+        # Probe server capabilities in a background thread
+        import threading
+
+        def _on_probe_done(stem):
+            if stem:
+                model_info_label.set_text(_("Model: %s") % stem)
+                model_info_label.set_tooltip_text(stem)
+            else:
+                model_info_label.set_text(_("Connected"))
+            query_spinner.stop()
+            return False
+
+        def _on_probe_failed():
+            model_info_label.set_text(_("Could not fetch server capabilities"))
+            query_spinner.stop()
+            return False
+
+        def _do_probe():
             url = server_entry.get_text()
-            import requests
-            try:
-                resp = requests.get(f"{url}/sdcpp/v1/capabilities", timeout=5)
-                resp.raise_for_status()
-                caps = resp.json()
+            caps = _fetch_capabilities(url)
+            if caps:
                 stem = caps.get("model", {}).get("stem", "")
-                if stem:
-                    model_info_label.set_text(_("Model: %s") % stem)
-                    model_info_label.set_tooltip_text(stem)
-                else:
-                    model_info_label.set_text(_("Connected"))
-            except Exception:
-                model_info_label.set_text(_("Could not fetch server capabilities"))
-        GLib.idle_add(probe_caps)
+                GLib.idle_add(_on_probe_done, stem)
+            else:
+                GLib.idle_add(_on_probe_failed)
+
+        def _start_probe():
+            query_spinner.start()
+            model_info_label.set_text(_("Querying server..."))
+            threading.Thread(target=_do_probe, daemon=True).start()
+            _probe_timeout_id[0] = None
+            return False
+
+        # Re-probe when server URL changes (debounced)
+        _probe_timeout_id = [None]
+        def _schedule_probe(*_args):
+            if _probe_timeout_id[0] is not None:
+                GLib.source_remove(_probe_timeout_id[0])
+            _probe_timeout_id[0] = GLib.timeout_add(600, _start_probe)
+        server_entry.connect("changed", _schedule_probe)
+
+        _start_probe()
 
         # --- Generate new image checkbox ---
         generate_label = Gtk.CheckButton.new_with_mnemonic(
