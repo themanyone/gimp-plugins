@@ -30,7 +30,6 @@ from gi.repository import Gdk
 
 import sys
 import os
-import math
 import tempfile
 import json
 from pathlib import Path
@@ -245,7 +244,7 @@ def sd_server_func(procedure, run_mode, image, drawables, config, data):
         row += 1
 
         # --- CFG Scale ---
-        cfg_label = Gtk.Label.new_with_mnemonic(_("CFG S_cale:"))
+        cfg_label = Gtk.Label.new_with_mnemonic(_("_Guidance:"))
         cfg_label.set_halign(Gtk.Align.START)
         cfg_label.set_hexpand(False)
         cfg_adj = Gtk.Adjustment(
@@ -255,7 +254,7 @@ def sd_server_func(procedure, run_mode, image, drawables, config, data):
         cfg_spin = Gtk.SpinButton(adjustment=cfg_adj, digits=1)
         cfg_spin.set_hexpand(True)
         cfg_spin.set_valign(Gtk.Align.CENTER)
-        cfg_spin.set_tooltip_text(_("Classifier-free guidance scale — how strongly the prompt is followed (1=creative, ~30=strict)"))
+        cfg_spin.set_tooltip_text(_("cfg_scale — how strongly the prompt is followed (1=creative, ~30=strict)"))
         cfg_label.set_mnemonic_widget(cfg_spin)
 
         def on_cfg_changed(s):
@@ -288,8 +287,8 @@ def sd_server_func(procedure, run_mode, image, drawables, config, data):
         grid.attach(seed_spin, 1, row, 1, 1)
         row += 1
 
-        # --- Denoising Strength (img2img only) ---
-        denoise_label = Gtk.Label.new_with_mnemonic(_("_Denoising:"))
+        # --- Denoising Strength ---
+        denoise_label = Gtk.Label.new_with_mnemonic(_("_Init Strength:"))
         denoise_label.set_halign(Gtk.Align.START)
         denoise_label.set_hexpand(False)
         denoise_adj = Gtk.Adjustment(
@@ -299,7 +298,7 @@ def sd_server_func(procedure, run_mode, image, drawables, config, data):
         denoise_spin = Gtk.SpinButton(adjustment=denoise_adj, digits=2)
         denoise_spin.set_hexpand(True)
         denoise_spin.set_valign(Gtk.Align.CENTER)
-        denoise_spin.set_tooltip_text(_("How much of the original image to preserve — 0 keeps it unchanged, 1 fully replaces it (img2img only)"))
+        denoise_spin.set_tooltip_text(_("denoising_strength — how much the original image is altered (0=unchanged, 1=fully replaced)"))
         denoise_label.set_mnemonic_widget(denoise_spin)
 
         def on_denoise_changed(s):
@@ -308,6 +307,25 @@ def sd_server_func(procedure, run_mode, image, drawables, config, data):
         denoise_spin.connect("value-changed", on_denoise_changed)
         grid.attach(denoise_label, 0, row, 1, 1)
         grid.attach(denoise_spin, 1, row, 1, 1)
+        row += 1
+
+        # --- Sampler ---
+        sampler_label = Gtk.Label.new_with_mnemonic(_("_Sampler:"))
+        sampler_label.set_halign(Gtk.Align.START)
+        sampler_label.set_hexpand(False)
+        sampler_entry = Gtk.Entry()
+        sampler_entry.set_text(config.get_property("sampler-name") or "euler")
+        sampler_entry.set_hexpand(True)
+        sampler_entry.set_valign(Gtk.Align.CENTER)
+        sampler_entry.set_tooltip_text(_("Sampler name (euler, heun, dpm++2m, lcm, etc.)"))
+        sampler_label.set_mnemonic_widget(sampler_entry)
+
+        def on_sampler_changed(e):
+            config.set_property("sampler-name", e.get_text())
+
+        sampler_entry.connect("changed", on_sampler_changed)
+        grid.attach(sampler_label, 0, row, 1, 1)
+        grid.attach(sampler_entry, 1, row, 1, 1)
         row += 1
 
         # --- Prompt ---
@@ -421,6 +439,7 @@ def _generate_new(procedure, run_mode, image, config):
     cfg_scale = config.get_property("cfg-scale") or 7.0
     negative_prompt = config.get_property("negative-prompt") or ""
     seed = config.get_property("seed")
+    sampler = config.get_property("sampler-name") or "euler"
 
     output_path = None
 
@@ -442,6 +461,8 @@ def _generate_new(procedure, run_mode, image, config):
             payload["negative_prompt"] = negative_prompt
         if seed is not None and seed >= 0:
             payload["seed"] = seed
+        if sampler:
+            payload["sampler_name"] = sampler
 
         import requests
         response = requests.post(
@@ -492,27 +513,11 @@ def _edit_layer(procedure, run_mode, image, drawables, config):
     server_url = config.get_property("server-url") or DEFAULT_SERVER_URL
     prompt = config.get_property("prompt") or ""
     negative_prompt = config.get_property("negative-prompt") or ""
-    raw_steps = config.get_property("steps") or 30
+    steps = config.get_property("steps") or 30
     cfg_scale = config.get_property("cfg-scale") or 7.0
     denoising = config.get_property("denoising-strength") or 0.75
     seed = config.get_property("seed")
-    # The sd.cpp server's img2img handler truncates the sigma schedule by
-    # the denoising strength: effective_steps = steps * strength. Scale up
-    # so the actual denoised step count matches what the user requested.
-    # The server's img2img handler truncates the sigma schedule:
-    #   t_enc = int(sample_steps * strength)
-    #   if t_enc == sample_steps: t_enc--
-    #   displayed_steps = t_enc + 1
-    # Search for the sample_steps value that yields displayed ≈ raw_steps.
-    scaled_steps = raw_steps
-    for _tries in range(200):
-        t_enc = int(scaled_steps * denoising)
-        if t_enc >= scaled_steps:
-            t_enc = scaled_steps - 1
-        displayed = t_enc + 1
-        if displayed >= raw_steps:
-            break
-        scaled_steps += 1
+    sampler = config.get_property("sampler-name") or "euler"
 
     Gimp.context_push()
     image.undo_group_start()
@@ -533,9 +538,7 @@ def _edit_layer(procedure, run_mode, image, drawables, config):
     supports_init_image = caps.get("features", {}).get("init_image", False) if caps else False
 
     # Vision-based edit models (Boogu, Qwen Image Edit) use the native
-    # sdcpp backend. They need sample_steps injected via sd_cpp_extra_args
-    # in the prompt so steps are respected, and strength instead of
-    # denoising_strength at the top level.
+    # sdcpp backend with init_image for reference conditioning.
     is_vision_edit = any(kw in model_name.lower() for kw in
                          ["boogu-edit", "boogu_image", "qwen-image-edit",
                           "qwen_image_edit", "longcat-image-edit"])
@@ -577,17 +580,19 @@ def _edit_layer(procedure, run_mode, image, drawables, config):
                 "init_images": [img_b64],
                 "extra_images": [img_b64],
                 "denoising_strength": denoising,
-                "steps": scaled_steps,
+                "steps": steps,
                 "cfg_scale": cfg_scale,
             }
             if seed is not None and seed >= 0:
                 payload["seed"] = seed
+            if sampler:
+                payload["sampler_name"] = sampler
         else:
             # Standard SD img2img: init_images + denoising_strength.
             payload = {
                 "prompt": prompt,
                 "init_images": [img_b64],
-                "steps": scaled_steps,
+                "steps": steps,
                 "cfg_scale": cfg_scale,
                 "denoising_strength": denoising,
             }
@@ -595,6 +600,8 @@ def _edit_layer(procedure, run_mode, image, drawables, config):
             payload["negative_prompt"] = negative_prompt
         if seed is not None and seed >= 0:
             payload["seed"] = seed
+        if sampler:
+            payload["sampler_name"] = sampler
 
         width = config.get_property("width")
         height = config.get_property("height")
@@ -751,6 +758,12 @@ class SDServer(Gimp.PlugIn):
             "seed", _("_Seed"),
             _("RNG seed (-1 for random)"),
             -1, 2147483647, -1, GObject.ParamFlags.READWRITE,
+        )
+        # Sampler name
+        procedure.add_string_argument(
+            "sampler-name", _("_Sampler"),
+            _("Sampler method (euler, heun, dpm++2m, lcm, etc.)"),
+            "euler", GObject.ParamFlags.READWRITE,
         )
         # Denoising strength
         procedure.add_double_argument(
