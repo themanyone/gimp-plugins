@@ -266,6 +266,28 @@ def sd_server_func(procedure, run_mode, image, drawables, config, data):
         grid.attach(cfg_spin, 1, row, 1, 1)
         row += 1
 
+        # --- Seed ---
+        seed_label = Gtk.Label.new_with_mnemonic(_("_Seed:"))
+        seed_label.set_halign(Gtk.Align.START)
+        seed_label.set_hexpand(False)
+        seed_adj = Gtk.Adjustment(
+            value=config.get_property("seed") or -1,
+            lower=-1, upper=2147483647, step_increment=1, page_increment=64
+        )
+        seed_spin = Gtk.SpinButton(adjustment=seed_adj)
+        seed_spin.set_hexpand(True)
+        seed_spin.set_valign(Gtk.Align.CENTER)
+        seed_spin.set_tooltip_text(_("RNG seed (-1 for random) — use the same seed to reproduce results"))
+        seed_label.set_mnemonic_widget(seed_spin)
+
+        def on_seed_changed(s):
+            config.set_property("seed", s.get_value_as_int())
+
+        seed_spin.connect("value-changed", on_seed_changed)
+        grid.attach(seed_label, 0, row, 1, 1)
+        grid.attach(seed_spin, 1, row, 1, 1)
+        row += 1
+
         # --- Denoising Strength (img2img only) ---
         denoise_label = Gtk.Label.new_with_mnemonic(_("_Denoising:"))
         denoise_label.set_halign(Gtk.Align.START)
@@ -398,6 +420,7 @@ def _generate_new(procedure, run_mode, image, config):
     steps = config.get_property("steps") or 30
     cfg_scale = config.get_property("cfg-scale") or 7.0
     negative_prompt = config.get_property("negative-prompt") or ""
+    seed = config.get_property("seed")
 
     output_path = None
 
@@ -417,6 +440,8 @@ def _generate_new(procedure, run_mode, image, config):
         }
         if negative_prompt:
             payload["negative_prompt"] = negative_prompt
+        if seed is not None and seed >= 0:
+            payload["seed"] = seed
 
         import requests
         response = requests.post(
@@ -470,6 +495,7 @@ def _edit_layer(procedure, run_mode, image, drawables, config):
     raw_steps = config.get_property("steps") or 30
     cfg_scale = config.get_property("cfg-scale") or 7.0
     denoising = config.get_property("denoising-strength") or 0.75
+    seed = config.get_property("seed")
     # The sd.cpp server's img2img handler truncates the sigma schedule by
     # the denoising strength: effective_steps = steps * strength. Scale up
     # so the actual denoised step count matches what the user requested.
@@ -532,6 +558,7 @@ def _edit_layer(procedure, run_mode, image, drawables, config):
         )
 
         Gimp.progress_set_text(_("Sending to SD server for editing..."))
+
         Gimp.progress_pulse()
 
         import requests
@@ -553,6 +580,8 @@ def _edit_layer(procedure, run_mode, image, drawables, config):
                 "steps": scaled_steps,
                 "cfg_scale": cfg_scale,
             }
+            if seed is not None and seed >= 0:
+                payload["seed"] = seed
         else:
             # Standard SD img2img: init_images + denoising_strength.
             payload = {
@@ -564,6 +593,8 @@ def _edit_layer(procedure, run_mode, image, drawables, config):
             }
         if negative_prompt:
             payload["negative_prompt"] = negative_prompt
+        if seed is not None and seed >= 0:
+            payload["seed"] = seed
 
         width = config.get_property("width")
         height = config.get_property("height")
@@ -714,6 +745,12 @@ class SDServer(Gimp.PlugIn):
             "cfg-scale", _("CFG S_cale"),
             _("Classifier-free guidance scale"),
             1.0, 30.0, 7.0, GObject.ParamFlags.READWRITE,
+        )
+        # Seed
+        procedure.add_int_argument(
+            "seed", _("_Seed"),
+            _("RNG seed (-1 for random)"),
+            -1, 2147483647, -1, GObject.ParamFlags.READWRITE,
         )
         # Denoising strength
         procedure.add_double_argument(

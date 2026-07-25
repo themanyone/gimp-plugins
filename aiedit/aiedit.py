@@ -260,6 +260,9 @@ def aiedit_func(procedure, run_mode, image, drawables, config, data):
         grid.attach(mode_combo, 1, row, 1, 1)
         row += 1
 
+        add_spin_row(_("_Seed:"), "seed", -1, -1, 2147483647,
+                     _("Random seed (-1 for random) — use the same seed to reproduce results"))
+
         add_spin_row_float(_("_Strength:"), "strength", 0.75, 0.0, 1.0,
                            _("How much to transform the image — 0=unchanged, 1=fully replaced"))
 
@@ -568,6 +571,10 @@ def aiedit_func(procedure, run_mode, image, drawables, config, data):
         add_flag("--lora", config.get_property("lora"))
         add_flag("--control-net", config.get_property("control-net"))
 
+        seed = config.get_property("seed")
+        if seed is not None:
+            command.extend(["--seed", str(seed)])
+
         edit_mode = config.get_property("edit-mode") or "img2img"
         if edit_mode == "kontext":
             command.extend(["-r", str(input_path)])
@@ -781,6 +788,11 @@ class AIEdit(Gimp.PlugIn):
         procedure.add_choice_argument(
             "edit-mode", _("Edit _Mode"), _("Editing mode: img2img or Kontext style transfer"),
             edit_mode_choice, "img2img", GObject.ParamFlags.READWRITE,
+        )
+        # Seed
+        procedure.add_int_argument(
+            "seed", _("_Seed"), _("RNG seed (-1 for random)"),
+            -1, 2147483647, -1, GObject.ParamFlags.READWRITE,
         )
         # Strength (denoising for img2img)
         procedure.add_double_argument(
