@@ -89,6 +89,7 @@ def sd_server_func(procedure, run_mode, image, drawables, config, data):
         server_entry.set_text(config.get_property("server-url") or DEFAULT_SERVER_URL)
         server_entry.set_hexpand(True)
         server_entry.set_valign(Gtk.Align.CENTER)
+        server_entry.set_tooltip_text(_("URL of the running SDCPP-compatible inference server"))
         server_label.set_mnemonic_widget(server_entry)
 
         def on_server_changed(e):
@@ -168,6 +169,7 @@ def sd_server_func(procedure, run_mode, image, drawables, config, data):
         generate_label.set_active(
             config.get_property("generate-new") or False
         )
+        generate_label.set_tooltip_text(_("When checked, create a new image instead of editing the current layer"))
 
         def on_generate_changed(cb):
             config.set_property("generate-new", cb.get_active())
@@ -187,6 +189,7 @@ def sd_server_func(procedure, run_mode, image, drawables, config, data):
         width_spin = Gtk.SpinButton(adjustment=width_adj)
         width_spin.set_hexpand(True)
         width_spin.set_valign(Gtk.Align.CENTER)
+        width_spin.set_tooltip_text(_("Output image width in pixels (64–8192)"))
         width_label.set_mnemonic_widget(width_spin)
 
         def on_width_changed(s):
@@ -208,6 +211,7 @@ def sd_server_func(procedure, run_mode, image, drawables, config, data):
         height_spin = Gtk.SpinButton(adjustment=height_adj)
         height_spin.set_hexpand(True)
         height_spin.set_valign(Gtk.Align.CENTER)
+        height_spin.set_tooltip_text(_("Output image height in pixels (64–8192)"))
         height_label.set_mnemonic_widget(height_spin)
 
         def on_height_changed(s):
@@ -229,6 +233,7 @@ def sd_server_func(procedure, run_mode, image, drawables, config, data):
         steps_spin = Gtk.SpinButton(adjustment=steps_adj)
         steps_spin.set_hexpand(True)
         steps_spin.set_valign(Gtk.Align.CENTER)
+        steps_spin.set_tooltip_text(_("Number of sampling steps — higher values generally improve quality but take longer (1–100)"))
         steps_label.set_mnemonic_widget(steps_spin)
 
         def on_steps_changed(s):
@@ -250,6 +255,7 @@ def sd_server_func(procedure, run_mode, image, drawables, config, data):
         cfg_spin = Gtk.SpinButton(adjustment=cfg_adj, digits=1)
         cfg_spin.set_hexpand(True)
         cfg_spin.set_valign(Gtk.Align.CENTER)
+        cfg_spin.set_tooltip_text(_("Classifier-free guidance scale — how strongly the prompt is followed (1=creative, ~30=strict)"))
         cfg_label.set_mnemonic_widget(cfg_spin)
 
         def on_cfg_changed(s):
@@ -271,6 +277,7 @@ def sd_server_func(procedure, run_mode, image, drawables, config, data):
         denoise_spin = Gtk.SpinButton(adjustment=denoise_adj, digits=2)
         denoise_spin.set_hexpand(True)
         denoise_spin.set_valign(Gtk.Align.CENTER)
+        denoise_spin.set_tooltip_text(_("How much of the original image to preserve — 0 keeps it unchanged, 1 fully replaces it (img2img only)"))
         denoise_label.set_mnemonic_widget(denoise_spin)
 
         def on_denoise_changed(s):
@@ -292,6 +299,7 @@ def sd_server_func(procedure, run_mode, image, drawables, config, data):
         scrolled.set_min_content_height(120)
 
         text_view = Gtk.TextView()
+        text_view.set_tooltip_text(_("Describe the image you want to generate — be as detailed as you like"))
         text_view.set_wrap_mode(Gtk.WrapMode.WORD)
         text_view.set_hexpand(True)
         text_view.set_vexpand(True)
@@ -332,6 +340,7 @@ def sd_server_func(procedure, run_mode, image, drawables, config, data):
         neg_scrolled.set_min_content_height(60)
 
         neg_text_view = Gtk.TextView()
+        neg_text_view.set_tooltip_text(_("Things to exclude from the generated image (optional)"))
         neg_text_view.set_wrap_mode(Gtk.WrapMode.WORD)
         neg_text_view.set_hexpand(True)
         neg_text_view.set_vexpand(True)

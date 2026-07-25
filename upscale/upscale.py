@@ -315,7 +315,9 @@ class Upscale (Gimp.PlugIn):
         # Model selection dropdown
         model_choice = Gimp.Choice.new()
         for i, model_id in enumerate(MODEL_CONFIGS):
-            model_choice.add(model_id, i, model_id, "")
+            cfg = MODEL_CONFIGS[model_id]
+            type_hint = {"spandrel": "Spandrel", "ldm": "LDM", "sd_upscale": "SD Upscale"}.get(cfg["type"], cfg["type"])
+            model_choice.add(model_id, i, model_id, "%s — %s" % (type_hint, model_id))
         procedure.add_choice_argument(
             "model", _("_Model"), _("Upscaling model to use"),
             model_choice, DEFAULT_MODEL, GObject.ParamFlags.READWRITE,

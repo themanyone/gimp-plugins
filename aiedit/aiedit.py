@@ -117,8 +117,11 @@ def aiedit_func(procedure, run_mode, image, drawables, config, data):
             preset_combo.set_active(0)
 
         save_btn = Gtk.Button.new_with_mnemonic(_("_Save"))
+        save_btn.set_tooltip_text(_("Save current settings as a named preset"))
         rename_btn = Gtk.Button.new_with_mnemonic(_("_Rename"))
+        rename_btn.set_tooltip_text(_("Rename the selected preset"))
         delete_btn = Gtk.Button.new_with_mnemonic(_("_Delete"))
+        delete_btn.set_tooltip_text(_("Delete the selected preset"))
 
         preset_hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=4)
         preset_hbox.pack_start(preset_combo, True, True, 0)
@@ -133,7 +136,7 @@ def aiedit_func(procedure, run_mode, image, drawables, config, data):
         # Widget storage for preset load/save
         widgets = {}
 
-        def add_file_row(label_text, prop_name, default):
+        def add_file_row(label_text, prop_name, default, tooltip):
             nonlocal row
             label = Gtk.Label.new_with_mnemonic(label_text)
             label.set_halign(Gtk.Align.START)
@@ -154,7 +157,7 @@ def aiedit_func(procedure, run_mode, image, drawables, config, data):
             row += 1
             return entry
 
-        def add_spin_row(label_text, prop_name, default, min_val, max_val):
+        def add_spin_row(label_text, prop_name, default, min_val, max_val, tooltip):
             nonlocal row
             label = Gtk.Label.new_with_mnemonic(label_text)
             label.set_halign(Gtk.Align.START)
@@ -162,6 +165,7 @@ def aiedit_func(procedure, run_mode, image, drawables, config, data):
             adjustment = Gtk.Adjustment(value=default, lower=min_val,
                                         upper=max_val, step_increment=1, page_increment=64)
             spin = Gtk.SpinButton(adjustment=adjustment)
+            spin.set_tooltip_text(tooltip)
             spin.set_hexpand(True)
             spin.set_valign(Gtk.Align.CENTER)
             label.set_mnemonic_widget(spin)
@@ -176,7 +180,7 @@ def aiedit_func(procedure, run_mode, image, drawables, config, data):
             row += 1
             return spin
 
-        def add_spin_row_float(label_text, prop_name, default, min_val, max_val):
+        def add_spin_row_float(label_text, prop_name, default, min_val, max_val, tooltip):
             nonlocal row
             label = Gtk.Label.new_with_mnemonic(label_text)
             label.set_halign(Gtk.Align.START)
@@ -184,6 +188,7 @@ def aiedit_func(procedure, run_mode, image, drawables, config, data):
             adjustment = Gtk.Adjustment(value=default, lower=min_val,
                                         upper=max_val, step_increment=0.1, page_increment=10)
             spin = Gtk.SpinButton(adjustment=adjustment, digits=1)
+            spin.set_tooltip_text(tooltip)
             spin.set_hexpand(True)
             spin.set_valign(Gtk.Align.CENTER)
             label.set_mnemonic_widget(spin)
@@ -198,20 +203,34 @@ def aiedit_func(procedure, run_mode, image, drawables, config, data):
             row += 1
             return spin
 
-        add_file_row(_("Diffusion _Model:"), "diffusion-model", DEFAULT_DIFFUSION_MODEL)
-        add_file_row(_("Clip _L:"), "clip-l", "")
-        add_file_row(_("_LLM:"), "llm", DEFAULT_LLM)
-        add_file_row(_("LLM _Vision:"), "llm-vision", DEFAULT_LLM_VISION)
-        add_file_row(_("_VAE:"), "vae", DEFAULT_VAE)
-        add_file_row(_("T5_X_XL:"), "t5xxl", "")
-        add_file_row(_("_T5:"), "t5", "")
-        add_file_row(_("LoR_A:"), "lora", "")
-        add_file_row(_("Control-_Net:"), "control-net", "")
-        add_spin_row(_("_Steps:"), "steps", 28, 1, 100)
-        add_spin_row_float(_("CFG S_cale:"), "cfg-scale", 4.0, 0.0, 30.0)
-        add_spin_row_float(_("G_uida_nce:"), "guidance", 3.5, 0.0, 30.0)
-        add_file_row(_("VAE _Format:"), "vae-format", "auto")
-        add_file_row(_("_Prediction:"), "prediction", "")
+        add_file_row(_("Diffusion _Model:"), "diffusion-model", DEFAULT_DIFFUSION_MODEL,
+                     _("Path to the diffusion model GGUF file"))
+        add_file_row(_("Clip _L:"), "clip-l", "",
+                     _("Path to the CLIP-L text encoder GGUF (optional)"))
+        add_file_row(_("_LLM:"), "llm", DEFAULT_LLM,
+                     _("Path to the LLM for vision-based prompting"))
+        add_file_row(_("LLM _Vision:"), "llm-vision", DEFAULT_LLM_VISION,
+                     _("Path to the LLM vision projector (mmproj) file"))
+        add_file_row(_("_VAE:"), "vae", DEFAULT_VAE,
+                     _("Path to the VAE decoder file"))
+        add_file_row(_("T5_X_XL:"), "t5xxl", "",
+                     _("Path to T5XXL encoder (required by some models like Kontext) — leave empty if not needed"))
+        add_file_row(_("_T5:"), "t5", "",
+                     _("Path to T5 encoder (alternative to T5XXL) — leave empty if not needed"))
+        add_file_row(_("LoR_A:"), "lora", "",
+                     _("Path to a LoRA adapter file to apply (optional)"))
+        add_file_row(_("Control-_Net:"), "control-net", "",
+                     _("Path to a ControlNet model for guided generation (optional)"))
+        add_spin_row(_("_Steps:"), "steps", 28, 1, 100,
+                     _("Number of sampling steps — higher values improve quality but take longer"))
+        add_spin_row_float(_("CFG S_cale:"), "cfg-scale", 4.0, 0.0, 30.0,
+                           _("How strongly to follow the prompt (1=creative, ~30=strict)"))
+        add_spin_row_float(_("G_uida_nce:"), "guidance", 3.5, 0.0, 30.0,
+                           _("Distilled guidance for flow-matching models like Flux (0=disabled)"))
+        add_file_row(_("VAE _Format:"), "vae-format", "auto",
+                     _("VAE latent format: auto, flux, sd3, flux2, wan"))
+        add_file_row(_("_Prediction:"), "prediction", "",
+                     _("Prediction type override: eps, v, sd3_flow, flux_flow (leave empty for auto-detect)"))
 
         # Edit mode: combo box with auto-detect from model name
         mode_label = Gtk.Label.new_with_mnemonic(_("Edit _Mode:"))
@@ -223,6 +242,7 @@ def aiedit_func(procedure, run_mode, image, drawables, config, data):
         mode_combo.append_text("Img2Img (edit)")
         mode_combo.append_text("Kontext (style transfer)")
         mode_label.set_mnemonic_widget(mode_combo)
+        mode_combo.set_tooltip_text(_("Img2Img: noise+denoise the input image. Kontext: vision-based style transfer via the input as reference"))
 
         # Auto-detect mode from model filename
         diffusion_model = config.get_property("diffusion-model") or ""
@@ -240,7 +260,8 @@ def aiedit_func(procedure, run_mode, image, drawables, config, data):
         grid.attach(mode_combo, 1, row, 1, 1)
         row += 1
 
-        add_spin_row_float(_("_Strength:"), "strength", 0.75, 0.0, 1.0)
+        add_spin_row_float(_("_Strength:"), "strength", 0.75, 0.0, 1.0,
+                           _("How much to transform the image — 0=unchanged, 1=fully replaced"))
 
         # Prompt: multi-line text view
         prompt_label = Gtk.Label.new_with_mnemonic(_("_Prompt:"))
@@ -253,6 +274,7 @@ def aiedit_func(procedure, run_mode, image, drawables, config, data):
         scrolled.set_min_content_height(120)
 
         text_view = Gtk.TextView()
+        text_view.set_tooltip_text(_("Describe the edit you want to apply — be detailed for best results"))
         text_view.set_wrap_mode(Gtk.WrapMode.WORD)
         text_view.set_hexpand(True)
         text_view.set_vexpand(True)
