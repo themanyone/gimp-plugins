@@ -313,19 +313,31 @@ def sd_server_func(procedure, run_mode, image, drawables, config, data):
         sampler_label = Gtk.Label.new_with_mnemonic(_("_Sampler:"))
         sampler_label.set_halign(Gtk.Align.START)
         sampler_label.set_hexpand(False)
-        sampler_entry = Gtk.Entry()
-        sampler_entry.set_text(config.get_property("sampler-name") or "euler")
-        sampler_entry.set_hexpand(True)
-        sampler_entry.set_valign(Gtk.Align.CENTER)
-        sampler_entry.set_tooltip_text(_("Sampler name (euler, heun, dpm++2m, lcm, etc.)"))
-        sampler_label.set_mnemonic_widget(sampler_entry)
+        sampler_combo = Gtk.ComboBoxText()
+        SAMPLER_NAMES = [
+            "euler", "euler_a", "heun", "dpm2", "dpm++2s_a", "dpm++2m",
+            "dpm++2mv2", "ipndm", "ipndm_v", "lcm", "ddim_trailing", "tcd",
+            "res_multistep", "res_2s", "er_sde", "euler_cfg_pp",
+            "euler_a_cfg_pp", "euler_ge",
+        ]
+        for name in SAMPLER_NAMES:
+            sampler_combo.append_text(name)
+        current_sampler = config.get_property("sampler-name") or "euler"
+        if current_sampler in SAMPLER_NAMES:
+            sampler_combo.set_active(SAMPLER_NAMES.index(current_sampler))
+        else:
+            sampler_combo.set_active(0)
+        sampler_combo.set_hexpand(True)
+        sampler_combo.set_valign(Gtk.Align.CENTER)
+        sampler_combo.set_tooltip_text(_("Sampling method — determines how noise is removed each step"))
+        sampler_label.set_mnemonic_widget(sampler_combo)
 
-        def on_sampler_changed(e):
-            config.set_property("sampler-name", e.get_text())
+        def on_sampler_changed(cb):
+            config.set_property("sampler-name", cb.get_active_text())
 
-        sampler_entry.connect("changed", on_sampler_changed)
+        sampler_combo.connect("changed", on_sampler_changed)
         grid.attach(sampler_label, 0, row, 1, 1)
-        grid.attach(sampler_entry, 1, row, 1, 1)
+        grid.attach(sampler_combo, 1, row, 1, 1)
         row += 1
 
         # --- Prompt ---
