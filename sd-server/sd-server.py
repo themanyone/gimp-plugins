@@ -30,6 +30,7 @@ from gi.repository import Gdk
 
 import sys
 import os
+import math
 import tempfile
 import json
 from pathlib import Path
@@ -456,10 +457,27 @@ def _edit_layer(procedure, run_mode, image, drawables, config):
     """Edit the current layer via the SD server API."""
     server_url = config.get_property("server-url") or DEFAULT_SERVER_URL
     prompt = config.get_property("prompt") or ""
-    steps = config.get_property("steps") or 30
+    negative_prompt = config.get_property("negative-prompt") or ""
+    raw_steps = config.get_property("steps") or 30
     cfg_scale = config.get_property("cfg-scale") or 7.0
     denoising = config.get_property("denoising-strength") or 0.75
-    negative_prompt = config.get_property("negative-prompt") or ""
+    # The sd.cpp server's img2img handler truncates the sigma schedule by
+    # the denoising strength: effective_steps = steps * strength. Scale up
+    # so the actual denoised step count matches what the user requested.
+    # The server's img2img handler truncates the sigma schedule:
+    #   t_enc = int(sample_steps * strength)
+    #   if t_enc == sample_steps: t_enc--
+    #   displayed_steps = t_enc + 1
+    # Search for the sample_steps value that yields displayed ≈ raw_steps.
+    scaled_steps = raw_steps
+    for _tries in range(200):
+        t_enc = int(scaled_steps * denoising)
+        if t_enc >= scaled_steps:
+            t_enc = scaled_steps - 1
+        displayed = t_enc + 1
+        if displayed >= raw_steps:
+            break
+        scaled_steps += 1
 
     Gimp.context_push()
     image.undo_group_start()
@@ -480,8 +498,9 @@ def _edit_layer(procedure, run_mode, image, drawables, config):
     supports_init_image = caps.get("features", {}).get("init_image", False) if caps else False
 
     # Vision-based edit models (Boogu, Qwen Image Edit) use the native
-    # /sdcpp/v1/img_gen endpoint with init_image + strength, which avoids
-    # the vision LLM tokenizer (massive RAM usage).
+    # sdcpp backend. They need sample_steps injected via sd_cpp_extra_args
+    # in the prompt so steps are respected, and strength instead of
+    # denoising_strength at the top level.
     is_vision_edit = any(kw in model_name.lower() for kw in
                          ["boogu-edit", "boogu_image", "qwen-image-edit",
                           "qwen_image_edit", "longcat-image-edit"])
@@ -514,15 +533,15 @@ def _edit_layer(procedure, run_mode, image, drawables, config):
         with open(input_path, "rb") as f:
             img_b64 = base64.b64encode(f.read()).decode("utf-8")
 
-        if is_kontext or supports_ref:
-            # Models with ref_image support (Kontext, Boogu, Z-Image) need
-            # extra_images for reference conditioning + init_images for VAE.
+        # Vision edit models (Boogu, Qwen, Longcat) and Kontext/ref models
+        # need extra_images for reference conditioning.
+        if is_vision_edit or is_kontext or supports_ref:
             payload = {
                 "prompt": prompt,
                 "init_images": [img_b64],
                 "extra_images": [img_b64],
-                "strength": denoising,
-                "steps": steps,
+                "denoising_strength": denoising,
+                "steps": scaled_steps,
                 "cfg_scale": cfg_scale,
             }
         else:
@@ -530,7 +549,7 @@ def _edit_layer(procedure, run_mode, image, drawables, config):
             payload = {
                 "prompt": prompt,
                 "init_images": [img_b64],
-                "steps": steps,
+                "steps": scaled_steps,
                 "cfg_scale": cfg_scale,
                 "denoising_strength": denoising,
             }
