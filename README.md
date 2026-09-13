@@ -135,7 +135,7 @@ It is not necessary to edit `upscale/upscale.py` to:
 
 ### AI Image
 
-The `aiimage` plugin calls `sd-cli` from the command line. It's a bit more complicated to use. But it offers more flexibility and of course it doesn't require a server. Fomd the AI Image dialog under File -> Create.
+The `aiimage` plugin calls `sd-cli` from the command line. It's a bit more complicated to use. But it offers more flexibility and of course it doesn't require a server. Find the AI Image dialog under File -> Create.
 
 Edit [aiimage.py](aiimage/aiimage.py) and set `MODELS_PATH` to where your models are. Or just enter the full path to each model into the dialog at runtime and save preferences. We are reusing our ComfyUI models but yours will be somewhere else.
 
