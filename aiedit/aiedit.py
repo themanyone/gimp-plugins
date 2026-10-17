@@ -202,6 +202,9 @@ def aiedit_func(procedure, run_mode, image, drawables, config, data):
                 "prediction": "",
                 "edit-mode": default_mode,
                 "use-selection": True,
+                "diffusion-fa": True,
+                "offload-to-cpu": True,
+                "max-vram": "",
                 "seed": -1,
                 "strength": 0.9,
                 "prompt": "",
@@ -390,6 +393,60 @@ def aiedit_func(procedure, run_mode, image, drawables, config, data):
         grid.attach(use_selection_check, 0, row, 2, 1)
         row += 1
 
+        diffusion_fa_check = Gtk.CheckButton.new_with_mnemonic(
+            _("Diffusion _flash attention"))
+        diffusion_fa_check.set_active(bool(config.get_property("diffusion-fa")))
+        diffusion_fa_check.set_tooltip_text(
+            _("Pass --diffusion-fa. Turn off when sampling loses the Vulkan device."))
+        diffusion_fa_check.set_hexpand(True)
+        diffusion_fa_check.set_halign(Gtk.Align.START)
+        widgets["diffusion-fa"] = diffusion_fa_check
+
+        def on_diffusion_fa_toggled(cb):
+            config.set_property("diffusion-fa", cb.get_active())
+
+        diffusion_fa_check.connect("toggled", on_diffusion_fa_toggled)
+        grid.attach(diffusion_fa_check, 0, row, 2, 1)
+        row += 1
+
+        offload_check = Gtk.CheckButton.new_with_mnemonic(
+            _("Offload weights to _CPU"))
+        offload_check.set_active(bool(config.get_property("offload-to-cpu")))
+        offload_check.set_tooltip_text(
+            _("Pass --offload-to-cpu. Turn off when keeping the weights in RAM overruns the GPU."))
+        offload_check.set_hexpand(True)
+        offload_check.set_halign(Gtk.Align.START)
+        widgets["offload-to-cpu"] = offload_check
+
+        def on_offload_toggled(cb):
+            config.set_property("offload-to-cpu", cb.get_active())
+
+        offload_check.connect("toggled", on_offload_toggled)
+        grid.attach(offload_check, 0, row, 2, 1)
+        row += 1
+
+        max_vram_entry = Gtk.Entry()
+        max_vram_entry.set_text(config.get_property("max-vram") or "")
+        max_vram_entry.set_hexpand(True)
+        max_vram_entry.set_placeholder_text(_("Blank lets sd-cli decide"))
+        max_vram_tooltip = _(
+            "Value for --max-vram, in GiB. Leave blank to omit the flag. "
+            "A single number or a device assignment such as vulkan0=2.")
+        max_vram_entry.set_tooltip_text(max_vram_tooltip)
+
+        def on_max_vram_changed(entry):
+            config.set_property("max-vram", entry.get_text())
+
+        max_vram_entry.connect("changed", on_max_vram_changed)
+        widgets["max-vram"] = max_vram_entry
+        max_vram_label = Gtk.Label.new_with_mnemonic(_("Max _VRAM:"))
+        max_vram_label.set_halign(Gtk.Align.START)
+        max_vram_label.set_mnemonic_widget(max_vram_entry)
+        max_vram_label.set_tooltip_text(max_vram_tooltip)
+        grid.attach(max_vram_label, 0, row, 1, 1)
+        grid.attach(max_vram_entry, 1, row, 1, 1)
+        row += 1
+
         add_combined_row([
             (_("_Seed:"), "seed", "int", -1, -1, 2147483647,
              _("Random seed (-1 for random) — use the same seed to reproduce results")),
@@ -455,6 +512,11 @@ def aiedit_func(procedure, run_mode, image, drawables, config, data):
                             config.set_property(key, int(value))
                         elif prop.value_type == GObject.TYPE_DOUBLE:
                             config.set_property(key, float(value))
+                        elif prop.value_type == GObject.TYPE_BOOLEAN:
+                            if isinstance(value, bool):
+                                config.set_property(key, value)
+                            else:
+                                config.set_property(key, str(value).lower() in ("1", "true", "yes", "on"))
                         else:
                             config.set_property(key, str(value))
                     except (ValueError, TypeError):
@@ -794,10 +856,15 @@ def aiedit_func(procedure, run_mode, image, drawables, config, data):
                 command.extend(["--init-img", str(input_path)])
             command.extend(["--mask", str(mask_path)])
 
+        if config.get_property("diffusion-fa"):
+            command.append("--diffusion-fa")
+        if config.get_property("offload-to-cpu"):
+            command.append("--offload-to-cpu")
+        max_vram = (config.get_property("max-vram") or "").strip()
+        if max_vram:
+            command.extend(["--max-vram", max_vram])
         command.extend([
-            "--diffusion-fa",
             "-v",
-            "--offload-to-cpu",
             "-o", str(output_path),
             "-p", config.get_property("prompt"),
         ])
@@ -1006,6 +1073,21 @@ class AIEdit(Gimp.PlugIn):
         procedure.add_boolean_argument(
             "use-selection", _("Use _selection as mask"), _("Limit the edit to the current selection (inpaint)"),
             True, GObject.ParamFlags.READWRITE,
+        )
+        procedure.add_boolean_argument(
+            "diffusion-fa", _("Diffusion _flash attention"),
+            _("Pass --diffusion-fa. Turn off when sampling loses the Vulkan device."),
+            True, GObject.ParamFlags.READWRITE,
+        )
+        procedure.add_boolean_argument(
+            "offload-to-cpu", _("Offload weights to _CPU"),
+            _("Pass --offload-to-cpu. Turn off when keeping the weights in RAM overruns the GPU."),
+            True, GObject.ParamFlags.READWRITE,
+        )
+        procedure.add_string_argument(
+            "max-vram", _("Max _VRAM"),
+            _("Value for --max-vram, in GiB. Blank omits the flag."),
+            "", GObject.ParamFlags.READWRITE,
         )
         # Seed
         procedure.add_int_argument(
